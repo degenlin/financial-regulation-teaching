@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}银行风控结果{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-9">
+
+<div class="card mb-4 text-center" style="background:linear-gradient(135deg,#1a3a6b,#c0392b);color:#fff">
+  <div class="card-body py-3">
+    <h4 class="fw-bold">{{ s.bank_name }}风险控制实验结果</h4>
+    <div class="display-4 fw-bold my-2">{{ score }}<span class="fs-5 ms-1">/ 95 分</span></div>
+    <div class="opacity-75">风险事件处置（80分）+ 监管指标判断（15分）</div>
+  </div>
+</div>
+
+<!-- 指标判断结果 -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+    <i class="fas fa-clipboard-check me-2"></i>监管指标判断结果（共15分）
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <!-- LCR -->
+      <div class="col-md-4">
+        <div class="card text-center {{ 'border-success' if ind_answers.q_lcr.correct else 'border-danger' }}">
+          <div class="card-body py-3">
+            <div class="small text-muted">LCR判断 ({{ metrics.lcr }}%)</div>
+            <div class="badge {{ 'bg-success' if ind_answers.q_lcr.correct else 'bg-danger' }} my-1">
+              {{ '✓ 正确 +5分' if ind_answers.q_lcr.correct else '✗ 错误 +0分' }}
+            </div>
+            <div class="small">
+              你的判断：<strong>{{ ind_labels.get(ind_answers.q_lcr.answer, ind_answers.q_lcr.answer) }}</strong>
+              {% if not ind_answers.q_lcr.correct %}
+              <br>正确：<strong class="text-success">{{ ind_labels.get(ind_answers.q_lcr.expected, '') }}</strong>
+              {% endif %}
+            </div>
+            <div class="small text-muted mt-1">LCR={{ metrics.lcr }}%≥100%，但偏低，需持续监测</div>
+          </div>
+        </div>
+      </div>
+      <!-- NPL -->
+      <div class="col-md-4">
+        <div class="card text-center {{ 'border-success' if ind_answers.q_npl.correct else 'border-danger' }}">
+          <div class="card-body py-3">
+            <div class="small text-muted">NPL判断 ({{ metrics.npl_ratio }}%)</div>
+            <div class="badge {{ 'bg-success' if ind_answers.q_npl.correct else 'bg-danger' }} my-1">
+              {{ '✓ 正确 +5分' if ind_answers.q_npl.correct else '✗ 错误 +0分' }}
+            </div>
+            <div class="small">
+              你的判断：<strong>{{ ind_labels.get(ind_answers.q_npl.answer, ind_answers.q_npl.answer) }}</strong>
+              {% if not ind_answers.q_npl.correct %}
+              <br>正确：<strong class="text-success">{{ ind_labels.get(ind_answers.q_npl.expected, '') }}</strong>
+              {% endif %}
+            </div>
+            <div class="small text-muted mt-1">NPL={{ metrics.npl_ratio }}%超2%警戒线，应发出警告</div>
+          </div>
+        </div>
+      </div>
+      <!-- Tier1 -->
+      <div class="col-md-4">
+        <div class="card text-center {{ 'border-success' if ind_answers.q_tier1.correct else 'border-danger' }}">
+          <div class="card-body py-3">
+            <div class="small text-muted">Tier1判断 ({{ metrics.tier1_ratio }}%)</div>
+            <div class="badge {{ 'bg-success' if ind_answers.q_tier1.correct else 'bg-danger' }} my-1">
+              {{ '✓ 正确 +5分' if ind_answers.q_tier1.correct else '✗ 错误 +0分' }}
+            </div>
+            <div class="small">
+              你的判断：<strong>{{ ind_labels.get(ind_answers.q_tier1.answer, ind_answers.q_tier1.answer) }}</strong>
+              {% if not ind_answers.q_tier1.correct %}
+              <br>正确：<strong class="text-success">{{ ind_labels.get(ind_answers.q_tier1.expected, '') }}</strong>
+              {% endif %}
+            </div>
+            <div class="small text-muted mt-1">Tier1={{ metrics.tier1_ratio }}%≥8.5%缓冲要求，资本充足</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 风险事件处置结果 -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#c0392b;color:#fff">
+    <i class="fas fa-exclamation-triangle me-2"></i>风险事件处置参考解析（共80分）
+  </div>
+  <div class="card-body">
+    {% set colors = {'信用风险': '#e74c3c', '市场风险': '#e67e22', '操作风险': '#9b59b6', '流动性风险': '#3498db'} %}
+    {% for fb in results %}
+    {% set color = colors.get(fb.event.type, '#1a3a6b') %}
+    <div class="card mb-3" style="border-left:4px solid {{ color }}">
+      <div class="card-body py-3">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <span class="badge me-1" style="background:{{ color }}">{{ fb.event.type }}</span>
+            <strong>事件{{ loop.index }}：{{ fb.event.desc[:50] }}...</strong>
+          </div>
+          <span class="badge {{ 'bg-success' if fb.event_score >= 15 else ('bg-warning text-dark' if fb.event_score >= 8 else 'bg-secondary') }}">
+            +{{ fb.event_score }}/{{ fb.max_score }}分
+          </span>
+        </div>
+
+        {% if fb.answer %}
+        <div class="p-2 rounded mb-2" style="background:#f4f6fa">
+          <strong class="small">你的处置建议：</strong>
+          <div class="small mt-1">{{ fb.answer }}</div>
+          {% if fb.matched_keywords %}
+          <div class="mt-1 small">
+            命中要点：
+            {% for kw in fb.matched_keywords %}
+            <span class="badge bg-success me-1">{{ kw }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+          {% if fb.keywords %}
+          {% set missed = fb.keywords | reject('in', fb.matched_keywords) | list %}
+          {% if missed %}
+          <div class="mt-1 small text-muted">
+            未提及：
+            {% for kw in missed %}
+            <span class="badge bg-light text-dark border me-1">{{ kw }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+          {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="p-2 rounded" style="background:
+          {% if fb.event.type == '信用风险' %}#fff0f0
+          {% elif fb.event.type == '市场风险' %}#fff8f0
+          {% elif fb.event.type == '操作风险' %}#f8f0ff
+          {% else %}#f0f8ff{% endif %}">
+          <strong class="small">参考处置方案：</strong>
+          <div class="small mt-1">{{ fb.event.correct_action }}</div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- 综合风控评估 -->
+<div class="card mb-4 border-primary">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+    <i class="fas fa-shield-alt me-2"></i>{{ s.bank_name }}综合风控评估
+  </div>
+  <div class="card-body small">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <strong>整体风险状况：</strong>
+        <ul class="mt-1 mb-0">
+          <li>资本充足率达标，Tier1={{ metrics.tier1_ratio }}%（≥8.5% ✓）</li>
+          <li>流动性达标但偏紧，LCR={{ metrics.lcr }}%（需持续监测）</li>
+          <li>NSFR={{ metrics.nsfr }}%（{% if metrics.nsfr >= 100 %}达标 ✓{% else %}不达标{% endif %}）</li>
+          <li>资产质量存隐患，NPL={{ metrics.npl_ratio }}%（超2%警戒线）</li>
+          <li>拨备总额{{ metrics.provision }}亿，需确保拨备覆盖率≥150%</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <strong>监管介入建议：</strong>
+        <ul class="mt-1 mb-0">
+          <li>制定不良贷款压降计划，12个月内降至2%以下</li>
+          <li>提高拨备覆盖率至150%以上，增强风险缓冲</li>
+          <li>流动性月度报告义务，监控LCR/NSFR变动</li>
+          <li>操作风险事件强制报告，30日内完成内控整改</li>
+          <li>暂缓新增高风险行业授信，控制集中度风险</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex gap-3">
+  <a href="/lab/bankrisk" class="btn btn-outline-primary flex-fill">
+    <i class="fas fa-redo me-1"></i>重新处置
+  </a>
+  <a href="/student" class="btn btn-outline-secondary flex-fill">返回主页</a>
+</div>
+</div></div>
+</div>
+{% endblock %}

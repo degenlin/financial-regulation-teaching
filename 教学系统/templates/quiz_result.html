@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}测验结果{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <!-- Score card -->
+      <div class="card mb-4 text-center" style="background:linear-gradient(135deg,#1a3a6b,#2e75b6);color:#fff">
+        <div class="card-body py-4">
+          <h5 class="fw-bold">第{{ ch.num }}章 {{ ch.title }} — 测验结果</h5>
+          <div class="display-3 fw-bold my-3">{{ score }} / {{ total }}</div>
+          <div class="display-6 fw-semibold
+            {% if score/total >= 0.8 %}text-warning{% elif score/total >= 0.6 %}text-light{% else %}text-danger{% endif %}">
+            {{ (score/total*100)|round(1) }}%
+          </div>
+          {% if score/total >= 0.8 %}
+          <div class="mt-2 opacity-75"><i class="fas fa-star me-1"></i>优秀！掌握扎实</div>
+          {% elif score/total >= 0.6 %}
+          <div class="mt-2 opacity-75"><i class="fas fa-thumbs-up me-1"></i>良好，继续努力</div>
+          {% else %}
+          <div class="mt-2 opacity-75"><i class="fas fa-book me-1"></i>建议复习本章内容</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Answer review -->
+      <h6 class="fw-bold mb-3" style="color:#1a3a6b"><i class="fas fa-list-check me-2"></i>答题详情</h6>
+      {% for q in questions %}
+      {% set ua = answers.get(q.id|string, '') %}
+      <div class="card mb-3 border-{{ 'success' if ua == q.answer else 'danger' }}">
+        <div class="card-header d-flex justify-content-between align-items-center
+          {{ 'bg-success text-white' if ua == q.answer else 'bg-danger text-white' }}">
+          <span>Q{{ loop.index }}. {{ q.question }}</span>
+          <span>
+            {% if ua == q.answer %}
+            <i class="fas fa-check-circle"></i> 正确
+            {% else %}
+            <i class="fas fa-times-circle"></i> 错误
+            {% endif %}
+          </span>
+        </div>
+        <div class="card-body small">
+          <div class="row g-2">
+            {% for opt, label in [('A', q.option_a), ('B', q.option_b), ('C', q.option_c), ('D', q.option_d)] %}
+            {% if label %}
+            <div class="col-md-6">
+              <div class="p-2 rounded
+                {% if opt == q.answer %}bg-success bg-opacity-10 border border-success{% endif %}
+                {% if opt == ua and ua != q.answer %}bg-danger bg-opacity-10 border border-danger{% endif %}">
+                <span class="badge me-1
+                  {% if opt == q.answer %}bg-success{% elif opt == ua %}bg-danger{% else %}bg-light text-dark{% endif %}">
+                  {{ opt }}
+                </span>
+                {{ label }}
+                {% if opt == q.answer %}<i class="fas fa-check text-success ms-1"></i>{% endif %}
+                {% if opt == ua and ua != q.answer %}<i class="fas fa-times text-danger ms-1"></i>{% endif %}
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+          </div>
+          {% if q.explanation %}
+          <div class="mt-2 p-2 rounded" style="background:#f0f4fb;border-left:3px solid #2e75b6">
+            <i class="fas fa-lightbulb me-1 text-warning"></i><strong>解析：</strong>{{ q.explanation }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+
+      <div class="d-flex gap-3 mt-3">
+        <a href="/student/chapter/{{ ch.id }}" class="btn btn-outline-primary flex-fill">
+          <i class="fas fa-book me-1"></i>返回章节
+        </a>
+        <a href="/student/quiz/{{ ch.id }}" class="btn fw-bold text-white flex-fill" style="background:#1a3a6b">
+          <i class="fas fa-redo me-1"></i>再次测验
+        </a>
+        <a href="/student" class="btn btn-outline-secondary flex-fill">
+          <i class="fas fa-home me-1"></i>主页
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

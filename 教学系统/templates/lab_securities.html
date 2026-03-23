@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}实验3：证券监管{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-10">
+
+<div class="card mb-4" style="background:linear-gradient(135deg,#1a3a6b,#c0392b);color:#fff">
+  <div class="card-body py-3">
+    <div class="d-flex align-items-center">
+      <div>
+        <span class="badge bg-warning text-dark mb-1">实验三 · 第4章</span>
+        <h4 class="fw-bold mb-0">证券监管：内幕交易识别 + 信披合规判断</h4>
+        <p class="mb-0 opacity-75 small">识别内幕交易嫌疑人，并判断5项信息披露行为是否违规</p>
+      </div>
+      <a href="/student" class="btn btn-outline-light btn-sm ms-auto">返回</a>
+    </div>
+  </div>
+</div>
+
+<form method="post" action="/lab/securities/submit">
+
+<!-- Part A: 内幕交易 -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#c0392b;color:#fff">
+    <i class="fas fa-user-secret me-2"></i>Part A：内幕交易嫌疑人识别（每案可多选）
+  </div>
+  <div class="card-body">
+    {% for case in insider_cases %}
+    <div class="mb-4 {{ 'border-top pt-4' if loop.index > 1 }}">
+      <div class="d-flex align-items-start mb-3">
+        <span class="badge bg-dark me-2 mt-1">案例{{ loop.index }}</span>
+        <div>
+          <div class="fw-bold">{{ case.company }}</div>
+          <div class="small text-muted mt-1">{{ case.event }}</div>
+          <div class="small mt-1">
+            <span class="text-danger"><i class="fas fa-key me-1"></i>内幕信息形成日：{{ case.insider_info_date }}</span>
+            <span class="ms-3 text-muted">公告日：{{ case.public_date }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm border mb-0" style="font-size:.82rem">
+          <thead class="table-light">
+            <tr>
+              <th>选择</th><th>嫌疑人</th><th>交易时间</th>
+              <th>股数/万股</th><th>均价/元</th><th>获利/万元</th><th>关联关系</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for s in case.suspects %}
+          <tr>
+            <td>
+              <input type="checkbox" class="form-check-input"
+                     name="insider_{{ case.id }}" value="{{ loop.index }}">
+            </td>
+            <td class="fw-semibold">{{ s.name }}</td>
+            <td>
+              {% if s.buy_date != 'N/A' %}买入：{{ s.buy_date }}
+              {% else %}卖出：{{ s.sell_date }}{% endif %}
+            </td>
+            <td>{{ s.shares // 10000 }}</td>
+            <td>{{ s.avg_price }}</td>
+            <td class="{{ 'text-success fw-bold' if s.profit > 0 else 'text-danger' }}">
+              {{ s.profit }}
+            </td>
+            <td class="small text-muted">{{ s.relation }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Part B: 信息披露合规 -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+    <i class="fas fa-file-alt me-2"></i>Part B：信息披露合规性判断（判断是否违规）
+  </div>
+  <div class="card-body">
+    {% for item in disclosure_items %}
+    <div class="card mb-3" style="border-left:4px solid #2e75b6">
+      <div class="card-body py-3">
+        <div class="d-flex align-items-start">
+          <span class="badge bg-secondary me-2 mt-1">{{ item.category }}</span>
+          <div class="flex-grow-1">
+            <div class="small mb-2">{{ item.scenario }}</div>
+            <div class="d-flex gap-4">
+              <div class="form-check">
+                <input class="form-check-input" type="radio"
+                       name="disc_{{ item.id }}" value="yes" id="d{{ item.id }}_y" required>
+                <label class="form-check-label text-danger fw-semibold" for="d{{ item.id }}_y">
+                  <i class="fas fa-times-circle me-1"></i>违规
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio"
+                       name="disc_{{ item.id }}" value="no" id="d{{ item.id }}_n">
+                <label class="form-check-label text-success fw-semibold" for="d{{ item.id }}_n">
+                  <i class="fas fa-check-circle me-1"></i>不违规
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="d-grid">
+  <button type="submit" class="btn btn-lg fw-bold text-white" style="background:#c0392b">
+    <i class="fas fa-gavel me-2"></i>提交判断
+  </button>
+</div>
+</form>
+</div></div>
+</div>
+{% endblock %}

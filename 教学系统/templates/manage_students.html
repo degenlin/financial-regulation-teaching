@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}学生管理{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-2 sidebar py-3">
+      <a href="/teacher" class="nav-link mb-1"><i class="fas fa-arrow-left me-2"></i>返回控制台</a>
+      <hr>
+      <a href="/teacher/students" class="nav-link active mb-1"><i class="fas fa-users me-2"></i>学生管理</a>
+      <a href="/teacher/import_students" class="nav-link mb-1"><i class="fas fa-file-import me-2"></i>批量导入</a>
+      <a href="/teacher/export_scores" class="nav-link mb-1"><i class="fas fa-download me-2"></i>导出成绩</a>
+    </nav>
+    <main class="col-md-10 p-4">
+      <div class="d-flex align-items-center mb-4">
+        <h5 class="fw-bold mb-0" style="color:#1a3a6b"><i class="fas fa-users me-2"></i>学生账号管理</h5>
+        <div class="ms-auto d-flex gap-2">
+          <a href="/teacher/import_students" class="btn btn-primary btn-sm fw-bold">
+            <i class="fas fa-file-import me-1"></i>批量导入
+          </a>
+          <a href="/teacher/export_scores" class="btn btn-success btn-sm fw-bold">
+            <i class="fas fa-download me-1"></i>导出成绩
+          </a>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <form class="mb-3" method="get">
+        <div class="input-group" style="max-width:400px">
+          <input type="text" name="q" class="form-control" value="{{ q }}"
+                 placeholder="搜索姓名/学号/用户名...">
+          <button class="btn btn-outline-primary"><i class="fas fa-search"></i></button>
+          {% if q %}<a href="/teacher/students" class="btn btn-outline-secondary">清除</a>{% endif %}
+        </div>
+      </form>
+
+      <div class="card">
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0 align-middle">
+            <thead class="table-dark"><tr>
+              <th>#</th>
+              <th>姓名</th>
+              <th>用户名</th>
+              <th>学号</th>
+              <th>班级</th>
+              <th>注册时间</th>
+              <th>操作</th>
+            </tr></thead>
+            <tbody>
+            {% for s in students %}
+            <tr>
+              <td class="text-muted small">{{ loop.index }}</td>
+              <td class="fw-semibold">{{ s.name }}</td>
+              <td><code>{{ s.username }}</code></td>
+              <td>{{ s.student_id or '-' }}</td>
+              <td>{{ s.class_id or '-' }}</td>
+              <td class="small text-muted">{{ s.created_at }}</td>
+              <td>
+                <div class="d-flex gap-1">
+                  <!-- Reset password -->
+                  <button class="btn btn-sm btn-outline-warning"
+                          onclick="resetPw({{ s.id }}, '{{ s.name }}')">
+                    <i class="fas fa-key"></i>
+                  </button>
+                  <!-- Delete -->
+                  <form method="post" action="/teacher/delete_student/{{ s.id }}"
+                        onsubmit="return confirm('确认删除学生 {{ s.name }}？')">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" class="text-center text-muted py-3">暂无学生数据</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer text-muted small">
+          共 {{ students|length }} 名学生
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Reset password modal -->
+<div class="modal fade" id="resetModal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header"><h6 class="modal-title">重置密码</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" id="resetForm">
+        <div class="modal-body">
+          <p class="small text-muted" id="resetTarget"></p>
+          <input type="text" name="new_pw" class="form-control" value="student123"
+                 placeholder="新密码（默认student123）">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-warning btn-sm fw-bold">确认重置</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function resetPw(uid, name) {
+  document.getElementById('resetTarget').textContent = '学生：' + name;
+  document.getElementById('resetForm').action = '/teacher/reset_password/' + uid;
+  new bootstrap.Modal(document.getElementById('resetModal')).show();
+}
+</script>
+{% endblock %}

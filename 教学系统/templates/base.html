@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}金融监管教学实验系统{% endblock %}</title>
+<link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+:root{
+  --primary:#1a3a6b;
+  --secondary:#2e75b6;
+  --accent:#c0392b;
+  --gold:#d4ac0d;
+  --green:#1e8b4c;
+}
+body{background:#f4f6fa;font-family:"Microsoft YaHei","PingFang SC",sans-serif;}
+.navbar{background:var(--primary)!important;}
+.navbar-brand{font-weight:700;color:#fff!important;font-size:1.1rem;}
+.nav-link{color:rgba(255,255,255,.85)!important;}
+.nav-link:hover,.nav-link.active{color:#fff!important;}
+.sidebar{background:#fff;border-right:1px solid #e0e6f0;min-height:calc(100vh - 56px);padding:1.2rem 0;}
+.sidebar .nav-link{color:#444;border-radius:0 24px 24px 0;margin-right:12px;padding:.5rem 1.2rem;}
+.sidebar .nav-link:hover,.sidebar .nav-link.active{background:var(--secondary);color:#fff!important;}
+.sidebar .nav-link i{width:20px;}
+.card{border:none;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);}
+.card-header{border-radius:12px 12px 0 0!important;}
+.badge-chapter{background:var(--secondary);color:#fff;border-radius:20px;padding:2px 10px;font-size:.78rem;}
+.stat-card{border-left:4px solid var(--secondary);}
+.stat-card.red{border-left-color:var(--accent);}
+.stat-card.gold{border-left-color:var(--gold);}
+.stat-card.green{border-left-color:var(--green);}
+.chapter-item{border-left:4px solid var(--secondary);padding-left:12px;margin-bottom:8px;}
+.quiz-option label{display:block;padding:8px 14px;border:1px solid #dde;border-radius:8px;cursor:pointer;margin:4px 0;}
+.quiz-option input:checked+label{background:#eaf1fb;border-color:var(--secondary);}
+.quiz-option label:hover{background:#f0f4fb;}
+.progress{height:8px;border-radius:4px;}
+footer{background:var(--primary);color:rgba(255,255,255,.7);font-size:.85rem;padding:1rem 0;margin-top:2rem;}
+</style>
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand" href="/"><i class="fas fa-university me-2"></i>金融监管教学实验系统</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navCollapse">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navCollapse">
+      <ul class="navbar-nav ms-auto">
+        {% if session.user_id %}
+        <li class="nav-item"><span class="nav-link"><i class="fas fa-user-circle me-1"></i>{{ user.name if user else '' }}</span></li>
+        <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt me-1"></i>退出</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="container-fluid px-4 mt-2">
+{% for cat, msg in messages %}
+<div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
+  {{ msg }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+{% block content %}{% endblock %}
+
+<footer class="text-center">
+  <div class="container">金融监管理论与实践 教学实验系统 &copy; 2024 | 基于王娴教材设计</div>
+</footer>
+<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

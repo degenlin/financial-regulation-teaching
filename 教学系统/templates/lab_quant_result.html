@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}量化监管结果{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-9">
+
+<div class="card mb-4 text-center" style="background:linear-gradient(135deg,#1a3a6b,#16a085);color:#fff">
+  <div class="card-body py-3">
+    <h4 class="fw-bold">量化监管实验结果</h4>
+    <div class="display-4 fw-bold my-2">{{ score }}<span class="fs-5 ms-1">/ 100 分</span></div>
+    <div class="opacity-75">VaR · CoVaR · CCyB 综合分析得分</div>
+  </div>
+</div>
+
+<!-- Q1 -->
+<div class="card mb-3 {{ 'border-success' if feedback.q1.correct else 'border-danger' }}">
+  <div class="card-header fw-bold {{ 'bg-success text-white' if feedback.q1.correct else 'bg-danger text-white' }}">
+    Q1：系统性风险贡献最大的银行（ΔCoVaR）
+    <span class="ms-auto float-end">{{ '+25分' if feedback.q1.correct else '0分' }}</span>
+  </div>
+  <div class="card-body small">
+    <div class="row g-3">
+      <div class="col-md-5">
+        <div>你的答案：<strong class="{{ 'text-success' if feedback.q1.correct else 'text-danger' }}">{{ feedback.q1.answer }}</strong>
+          {{ '✓' if feedback.q1.correct else '✗' }}
+        </div>
+        {% if not feedback.q1.correct %}
+        <div class="text-success mt-1">正确答案：<strong>{{ feedback.q1.correct_ans }}</strong></div>
+        {% endif %}
+      </div>
+      <div class="col-md-7">
+        <div class="p-2 rounded" style="background:#eaf0fb">
+          <strong class="text-primary">ΔCoVaR排名：</strong><br>
+          {% for b in banks|sort(attribute='covar_contribution', reverse=True) %}
+          <div>{{ loop.index }}. {{ b.name }}：{{ b.covar_contribution }}亿</div>
+          {% endfor %}
+          <div class="mt-1 text-muted small">ΔCoVaR最高的机构对系统风险边际贡献最大，应认定为系统重要性机构</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Q2 -->
+<div class="card mb-3 {{ 'border-success' if feedback.q2.correct else 'border-danger' }}">
+  <div class="card-header fw-bold {{ 'bg-success text-white' if feedback.q2.correct else 'bg-danger text-white' }}">
+    Q2：自身VaR最高的银行（个体风险）
+    <span class="ms-auto float-end">{{ '+20分' if feedback.q2.correct else '0分' }}</span>
+  </div>
+  <div class="card-body small">
+    <div class="row g-3">
+      <div class="col-md-5">
+        <div>你的答案：<strong class="{{ 'text-success' if feedback.q2.correct else 'text-danger' }}">{{ feedback.q2.answer }}</strong>
+          {{ '✓' if feedback.q2.correct else '✗' }}
+        </div>
+        {% if not feedback.q2.correct %}
+        <div class="text-success mt-1">正确答案：<strong>{{ feedback.q2.correct_ans }}</strong></div>
+        {% endif %}
+      </div>
+      <div class="col-md-7">
+        <div class="p-2 rounded" style="background:#ffeaea">
+          <strong class="text-danger">VaR(99%)排名：</strong><br>
+          {% for b in banks|sort(attribute='var_99', reverse=True) %}
+          <div>{{ loop.index }}. {{ b.name }}：{{ b.var_99 }}亿</div>
+          {% endfor %}
+          <div class="mt-1 text-muted small">注意：VaR高的机构不等于系统危险性高（中小行VaR高但CoVaR低）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Q3 -->
+<div class="card mb-3 {{ 'border-success' if feedback.q3.correct else 'border-danger' }}">
+  <div class="card-header fw-bold {{ 'bg-success text-white' if feedback.q3.correct else 'bg-danger text-white' }}">
+    Q3：CCyB政策建议
+    <span class="ms-auto float-end">{{ '+25分' if feedback.q3.correct else '0分' }}</span>
+  </div>
+  <div class="card-body small">
+    <div class="row g-3">
+      <div class="col-md-5">
+        <div>你的答案：<strong class="{{ 'text-success' if feedback.q3.correct else 'text-danger' }}">{{ feedback.q3.answer }}%</strong>
+          {{ '✓' if feedback.q3.correct else '✗' }}
+        </div>
+        {% if not feedback.q3.correct %}
+        <div class="text-success mt-1">正确答案：<strong>{{ ccyb_correct }}%</strong></div>
+        {% endif %}
+      </div>
+      <div class="col-md-7">
+        <div class="p-2 rounded" style="background:#fef9e7">
+          <strong style="color:#e67e22">CCyB计算逻辑：</strong><br>
+          信贷/GDP缺口 = <strong class="text-danger">{{ gap }}%</strong><br>
+          • 缺口 &lt; 2%：CCyB = 0%（正常）<br>
+          • 缺口 2–5%：CCyB = 0.5%（预警）<br>
+          • 缺口 5–10%：CCyB = 1.5%（偏热）<br>
+          • 缺口 ≥ 10%：CCyB = 2.5%（过热上限）<br>
+          <div class="mt-1 fw-bold text-danger">
+            当前缺口{{ gap }}% 位于5–10%区间 → CCyB = {{ ccyb_correct }}%
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Q4 -->
+<div class="card mb-4 {{ 'border-success' if feedback.q4.correct else 'border-danger' }}">
+  <div class="card-header fw-bold {{ 'bg-success text-white' if feedback.q4.correct else 'bg-danger text-white' }}">
+    Q4：最大单周损失（历史模拟VaR）
+    <span class="ms-auto float-end">{{ '+30分' if feedback.q4.correct else '0分' }}</span>
+  </div>
+  <div class="card-body small">
+    <div class="row g-3">
+      <div class="col-md-5">
+        <div>你的答案：<strong class="{{ 'text-success' if feedback.q4.correct else 'text-danger' }}">{{ feedback.q4.answer }}%</strong>
+          {{ '✓' if feedback.q4.correct else '✗' }}
+        </div>
+        {% if not feedback.q4.correct %}
+        <div class="text-success mt-1">正确答案：<strong>{{ feedback.q4.correct_ans }}%</strong>（±2%范围内均可）</div>
+        {% endif %}
+      </div>
+      <div class="col-md-7">
+        <div class="p-2 rounded" style="background:#e8f8f5">
+          <strong class="text-success">收益率序列：</strong>
+          {% for item in portfolio %}
+          <span class="{{ 'text-danger fw-bold' if item.return < -5 else '' }}">{{ item.return }}</span>{% if not loop.last %}, {% endif %}
+          {% endfor %}
+          (%)<br>
+          <div class="mt-1 fw-bold text-danger">最小值（最大单周亏损）= {{ feedback.q4.correct_ans }}%</div>
+          <div class="text-muted mt-1">历史模拟法VaR：直接从历史损失分布中取分位数</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 综合解读 -->
+<div class="card mb-4 border-primary">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+    <i class="fas fa-lightbulb me-2"></i>量化监管综合解读
+  </div>
+  <div class="card-body small">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <strong>VaR vs CoVaR的监管意义：</strong>
+        <ul class="mt-1 mb-0">
+          <li>VaR衡量<strong>单个机构</strong>内部风险（微观审慎）</li>
+          <li>ΔCoVaR衡量<strong>系统性贡献</strong>（宏观审慎）</li>
+          <li>两者结合识别"大而不倒"机构</li>
+          <li>中小行VaR可能更高，但系统贡献更低</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <strong>CCyB的政策逻辑：</strong>
+        <ul class="mt-1 mb-0">
+          <li>信贷过热期积累缓冲，抑制顺周期扩张</li>
+          <li>收缩期释放缓冲，避免信贷断崖式萎缩</li>
+          <li>当前缺口{{ gap }}%处于<strong class="text-warning">偏热区间</strong></li>
+          <li>建议启动CCyB至{{ ccyb_correct }}%，配合压力测试</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex gap-3">
+  <a href="/lab/quant" class="btn btn-outline-primary flex-fill">
+    <i class="fas fa-redo me-1"></i>重新分析
+  </a>
+  <a href="/student" class="btn btn-outline-secondary flex-fill">返回主页</a>
+</div>
+</div></div>
+</div>
+{% endblock %}

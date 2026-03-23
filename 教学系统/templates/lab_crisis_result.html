@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}压力测试结果{% endblock %}
+{% block extra_css %}
+<style>
+.pass-row{background:#e8f5e9!important}
+.fail-row{background:#fdecea!important}
+.capital-bar{height:22px;border-radius:4px;display:flex;align-items:center;padding:0 6px;color:#fff;font-size:.8rem;font-weight:600}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-10">
+
+<!-- Header -->
+<div class="card mb-4" style="background:linear-gradient(135deg,#1a1a2e,#c0392b);color:#fff">
+  <div class="card-body">
+    <div class="d-flex align-items-center">
+      <div>
+        <h4 class="fw-bold mb-1">压力测试结果报告</h4>
+        <div class="d-flex gap-3 small opacity-75">
+          <span>情景：<strong class="text-warning">{{ scenario.label }}</strong></span>
+          <span>GDP冲击：<strong>{{ scenario.gdp_shock }}%</strong></span>
+          <span>房价跌幅：<strong>{{ scenario.house_price_fall }}%</strong></span>
+          <span>违约率上升：<strong>{{ scenario.default_rate_rise }}pp</strong></span>
+        </div>
+      </div>
+      <div class="ms-auto text-end">
+        <div class="small opacity-75">通过率</div>
+        <div class="fs-2 fw-bold text-{{ 'success' if results|selectattr('pass')|list|length == results|length else 'warning' }}">
+          {{ results|selectattr('pass')|list|length }}/{{ results|length }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Summary cards -->
+<div class="row g-3 mb-4">
+  {% for r in results %}
+  <div class="col-md-4">
+    <div class="card h-100 {{ 'border-success' if r.pass else 'border-danger' }}">
+      <div class="card-header d-flex align-items-center {{ 'bg-success text-white' if r.pass else 'bg-danger text-white' }}">
+        <span class="fw-bold small">{{ r.bank.name }}</span>
+        <span class="ms-auto">
+          {% if r.pass %}<i class="fas fa-check-circle"></i> 通过
+          {% else %}<i class="fas fa-times-circle"></i> 不达标{% endif %}
+        </span>
+      </div>
+      <div class="card-body small">
+        <div class="mb-2">
+          <div class="d-flex justify-content-between mb-1">
+            <span>压力后Tier1充足率</span>
+            <strong class="{{ 'text-success' if r.pass else 'text-danger' }}">{{ r.new_ratio }}%</strong>
+          </div>
+          <div class="progress mb-2">
+            <div class="progress-bar {{ 'bg-success' if r.pass else 'bg-danger' }}"
+                 style="width:{{ [[r.new_ratio/15*100, 100]|min, 0]|max }}%"></div>
+          </div>
+          <div class="text-muted" style="font-size:.75rem">监管下限：{{ min_tier1 }}%</div>
+        </div>
+        <table class="table table-sm mb-0" style="font-size:.78rem">
+          <tr><td class="text-muted">信用损失</td><td class="text-danger fw-bold">-{{ r.credit_loss }}亿</td></tr>
+          <tr><td class="text-muted">市场损失</td><td class="text-danger fw-bold">-{{ r.market_loss }}亿</td></tr>
+          <tr><td class="text-muted">流动性成本</td><td class="text-danger fw-bold">-{{ r.liquidity_cost }}亿</td></tr>
+          <tr class="table-active"><td class="fw-bold">合计损失</td><td class="fw-bold text-danger">-{{ r.total_loss }}亿</td></tr>
+          {% if not r.pass %}
+          <tr class="table-danger"><td class="fw-bold">资本缺口</td><td class="fw-bold text-danger">{{ r.capital_gap }}亿</td></tr>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- 详细分析表 -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+    <i class="fas fa-table me-2"></i>各银行压力测试详细对比
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle small">
+        <thead class="table-dark">
+          <tr>
+            <th>银行</th>
+            <th>压力前Tier1</th>
+            <th>信用损失(亿)</th>
+            <th>市场损失(亿)</th>
+            <th>合计损失(亿)</th>
+            <th>压力后资本(亿)</th>
+            <th>压力后Tier1充足率</th>
+            <th>资本缺口(亿)</th>
+            <th>结论</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for r in results %}
+        <tr class="{{ 'pass-row' if r.pass else 'fail-row' }}">
+          <td class="fw-semibold">{{ r.bank.name }}</td>
+          <td>{{ r.bank.tier1_ratio }}%</td>
+          <td class="text-danger">{{ r.credit_loss }}</td>
+          <td class="text-danger">{{ r.market_loss }}</td>
+          <td class="text-danger fw-bold">{{ r.total_loss }}</td>
+          <td class="{{ 'text-success' if r.new_capital > 0 else 'text-danger' }}">{{ r.new_capital }}</td>
+          <td>
+            <span class="badge {{ 'bg-success' if r.pass else 'bg-danger' }} fs-6">
+              {{ r.new_ratio }}%
+            </span>
+          </td>
+          <td class="{{ 'text-danger fw-bold' if r.capital_gap > 0 else 'text-muted' }}">
+            {{ r.capital_gap if r.capital_gap > 0 else '—' }}
+          </td>
+          <td>
+            {% if r.pass %}
+            <span class="badge bg-success">资本充足</span>
+            {% elif r.new_ratio < 0 %}
+            <span class="badge bg-danger">资本耗尽，需处置</span>
+            {% else %}
+            <span class="badge bg-warning text-dark">需补充资本</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 监管应对建议 -->
+<div class="card mb-4">
+  <div class="card-header fw-bold bg-warning text-dark">
+    <i class="fas fa-gavel me-2"></i>监管应对建议分析
+  </div>
+  <div class="card-body">
+    {% for r in results %}
+    {% if not r.pass %}
+    <div class="alert alert-danger mb-3">
+      <strong>{{ r.bank.name }}</strong> — 压力后资本充足率 {{ r.new_ratio }}%，低于监管下限 {{ min_tier1 }}%，资本缺口 {{ r.capital_gap }} 亿元
+      <ul class="mt-2 mb-0 small">
+        <li>立即要求制定资本补充计划（发行优先股/二级资本债）</li>
+        <li>压降风险加权资产：出售非核心资产、降低交易账簿头寸</li>
+        {% if r.bank.leverage > 25 %}<li>杠杆率过高（{{ r.bank.leverage }}x），要求限制资产扩张</li>{% endif %}
+        {% if r.bank.cdos > 200 %}<li>CDO持仓巨大（{{ r.bank.cdos }}亿），要求加快出清高风险证券化产品</li>{% endif %}
+        {% if r.capital_gap > 100 %}<li>缺口超过100亿，考虑启动处置程序（Bail-in内部纾困机制）</li>{% endif %}
+      </ul>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% if results|selectattr('pass')|list|length == results|length %}
+    <div class="alert alert-success">所有银行在本情景下均通过压力测试，资本充足率满足监管要求。</div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Chart -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">资本充足率对比图</div>
+  <div class="card-body"><canvas id="capitalChart" height="70"></canvas></div>
+</div>
+
+<a href="/lab/crisis" class="btn btn-outline-primary me-2">
+  <i class="fas fa-redo me-1"></i>换情景再测
+</a>
+<a href="/student" class="btn btn-outline-secondary">返回主页</a>
+
+</div></div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const labels = [{% for r in results %}"{{ r.bank.name[:6] }}",{% endfor %}];
+const before = [{% for r in results %}{{ r.bank.tier1_ratio }},{% endfor %}];
+const after  = [{% for r in results %}{{ r.new_ratio }},{% endfor %}];
+new Chart(document.getElementById('capitalChart'), {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [
+      {label:'压力前Tier1充足率(%)', data:before, backgroundColor:'rgba(46,117,182,.7)', borderRadius:4},
+      {label:'压力后Tier1充足率(%)', data:after,
+       backgroundColor: after.map(v => v >= {{ min_tier1 }} ? 'rgba(30,139,76,.8)' : 'rgba(192,57,43,.8)'),
+       borderRadius:4},
+    ]
+  },
+  options:{
+    responsive:true,
+    scales:{
+      y:{min:-5, ticks:{callback:v=>v+'%'},
+         grid:{color: ctx => ctx.tick.value === {{ min_tier1 }} ? 'red' : '#eee'}},
+    },
+    plugins:{
+      annotation:{annotations:{line1:{type:'line',yMin:{{ min_tier1 }},yMax:{{ min_tier1 }},
+        borderColor:'red',borderWidth:2,label:{content:'监管下限 {{ min_tier1 }}%',display:true}}}}
+    }
+  }
+});
+</script>
+{% endblock %}

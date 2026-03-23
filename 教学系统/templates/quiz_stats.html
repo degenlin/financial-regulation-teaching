@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}测验统计{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-2 sidebar py-3">
+      <a href="/teacher" class="nav-link mb-1"><i class="fas fa-arrow-left me-2"></i>返回控制台</a>
+      <hr>
+      <a href="/teacher/quiz_stats" class="nav-link active mb-1"><i class="fas fa-chart-bar me-2"></i>测验统计</a>
+    </nav>
+    <main class="col-md-10 p-4">
+      <h5 class="fw-bold mb-4" style="color:#1a3a6b"><i class="fas fa-chart-bar me-2"></i>测验成绩统计</h5>
+
+      <!-- Chapter filter -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <form class="row g-2 align-items-end" method="get">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small">选择章节</label>
+              <select name="cid" class="form-select">
+                <option value="">— 选择章节 —</option>
+                {% for ch in chapters %}
+                <option value="{{ ch.id }}" {{ 'selected' if ch.id == sel_cid }}>
+                  第{{ ch.num }}章 · {{ ch.title }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-auto">
+              <button type="submit" class="btn fw-bold text-white" style="background:#1a3a6b">
+                <i class="fas fa-filter me-1"></i>筛选
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {% if results %}
+      <!-- Chart -->
+      <div class="card mb-4">
+        <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+          成绩分布
+        </div>
+        <div class="card-body">
+          <canvas id="scoreChart" height="60"></canvas>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="card">
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0 align-middle">
+            <thead class="table-dark"><tr>
+              <th>姓名</th><th>学号</th><th>班级</th>
+              <th>得分</th><th>总题</th><th>正确率</th><th>时间</th>
+            </tr></thead>
+            <tbody>
+            {% for r in results %}
+            <tr>
+              <td class="fw-semibold">{{ r.uname }}</td>
+              <td>{{ r.student_id or '-' }}</td>
+              <td>{{ r.class_id or '-' }}</td>
+              <td class="fw-bold text-primary">{{ r.score }}</td>
+              <td>{{ r.total }}</td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  {% set pct = (r.score/r.total*100)|round(1) %}
+                  <div class="progress flex-grow-1">
+                    <div class="progress-bar
+                      {% if pct >= 80 %}bg-success{% elif pct >= 60 %}bg-warning{% else %}bg-danger{% endif %}"
+                      style="width:{{ pct }}%"></div>
+                  </div>
+                  <span class="small fw-bold">{{ pct }}%</span>
+                </div>
+              </td>
+              <td class="text-muted small">{{ r.taken_at }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer text-muted small">共 {{ results|length }} 条记录</div>
+      </div>
+      {% elif sel_cid %}
+      <div class="alert alert-info">该章节暂无测验记录。</div>
+      {% else %}
+      <div class="alert alert-secondary">请选择章节查看统计数据。</div>
+      {% endif %}
+    </main>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+{% if results %}
+<script>
+const names  = [{% for r in results %}"{{ r.uname }}",{% endfor %}];
+const scores = [{% for r in results %}{{ (r.score/r.total*100)|round(1) }},{% endfor %}];
+new Chart(document.getElementById('scoreChart'), {
+  type: 'bar',
+  data: {
+    labels: names,
+    datasets:[{
+      label: '正确率(%)',
+      data: scores,
+      backgroundColor: scores.map(s =>
+        s>=80 ? 'rgba(30,139,76,.7)' : s>=60 ? 'rgba(212,172,13,.7)' : 'rgba(192,57,43,.7)'),
+      borderRadius: 4
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{ legend:{display:false} },
+    scales:{ y:{min:0,max:100,ticks:{callback:v=>v+'%'}} }
+  }
+});
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}第{{ ch.num }}章 {{ ch.title }}{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-2 sidebar py-3">
+      <a href="/student" class="nav-link mb-1"><i class="fas fa-arrow-left me-2"></i>返回主页</a>
+      <hr>
+      <div class="px-3 small text-muted fw-bold">本章操作</div>
+      <a href="/student/quiz/{{ ch.id }}" class="nav-link mb-1 mt-1"><i class="fas fa-pencil-alt me-2"></i>章节测验</a>
+      {% for exp in experiments %}
+      <a href="/student/experiment/{{ exp.id }}" class="nav-link mb-1">
+        <i class="fas fa-flask me-2"></i>{{ exp.title[:10] }}...
+      </a>
+      {% endfor %}
+    </nav>
+    <main class="col-md-10 p-4">
+      <!-- Header -->
+      <div class="card mb-4" style="background:linear-gradient(90deg,#1a3a6b,#2e75b6);color:#fff">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div>
+              <span class="badge bg-warning text-dark mb-2">第{{ ch.num }}章</span>
+              <h3 class="fw-bold mb-0">{{ ch.title }}</h3>
+            </div>
+            <div class="ms-auto">
+              <a href="/ppt/第{{ ch.id }}章_{{ ch.title }}.pptx"
+                 class="btn btn-warning btn-sm fw-bold">
+                <i class="fas fa-download me-1"></i>下载PPT课件
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <!-- Summary -->
+        {% if ch.summary %}
+        <div class="col-12">
+          <div class="card" style="border-left:4px solid #2e75b6">
+            <div class="card-body">
+              <div class="fw-bold mb-2" style="color:#1a3a6b">
+                <i class="fas fa-lightbulb me-2 text-warning"></i>本章核心知识点
+              </div>
+              <div class="small" style="line-height:1.8">{{ ch.summary }}</div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Quiz card -->
+        <div class="col-md-4">
+          <div class="card h-100" style="border-left:4px solid #1e8b4c">
+            <div class="card-body text-center py-4">
+              <i class="fas fa-pencil-alt fa-3x mb-3" style="color:#1e8b4c"></i>
+              <h6 class="fw-bold">章节测验</h6>
+              <p class="text-muted small">共 {{ quiz_count }} 道题</p>
+              <a href="/student/quiz/{{ ch.id }}" class="btn btn-success fw-bold px-4">
+                开始测验
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Experiments -->
+        {% for exp in experiments %}
+        <div class="col-md-4">
+          <div class="card h-100" style="border-left:4px solid #d4ac0d">
+            <div class="card-body">
+              <i class="fas fa-flask fa-2x mb-2" style="color:#d4ac0d"></i>
+              <h6 class="fw-bold">{{ exp.title }}</h6>
+              <p class="text-muted small">{{ exp.description[:60] }}...</p>
+              {% set cfg = exp.config | from_json %}
+              {% if cfg.lab_url %}
+              <a href="{{ cfg.lab_url }}" class="btn btn-warning btn-sm fw-bold">
+                <i class="fas fa-play me-1"></i>进入仿真实验
+              </a>
+              {% else %}
+              <a href="/student/experiment/{{ exp.id }}" class="btn btn-outline-warning btn-sm fw-bold">
+                进入实验
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Discussion -->
+      <div class="card mt-4">
+        <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+          <i class="fas fa-comments me-2"></i>课堂讨论区
+        </div>
+        <div class="card-body">
+          <div id="posts-area" style="max-height:300px;overflow-y:auto;margin-bottom:1rem">
+            {% for p in posts %}
+            <div class="d-flex mb-3">
+              <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
+                   style="width:34px;height:34px;min-width:34px;font-size:.85rem">{{ p.uname[0] }}</div>
+              <div>
+                <div class="small fw-bold" style="color:#1a3a6b">{{ p.uname }}
+                  <span class="text-muted fw-normal ms-2">{{ p.posted_at }}</span>
+                </div>
+                <div class="small mt-1 p-2 rounded" style="background:#f4f6fa">{{ p.content }}</div>
+              </div>
+            </div>
+            {% else %}
+            <p class="text-muted text-center small py-3">暂无讨论，来发表第一条吧！</p>
+            {% endfor %}
+          </div>
+          <div class="input-group">
+            <input type="text" id="post-input" class="form-control"
+                   placeholder="发表你的学习心得或问题...">
+            <button class="btn fw-bold text-white" style="background:#1a3a6b"
+                    onclick="submitPost({{ ch.id }})">
+              <i class="fas fa-paper-plane"></i> 发送
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function submitPost(cid) {
+  const input = document.getElementById('post-input');
+  const text = input.value.trim();
+  if (!text) return;
+  fetch('/student/discuss/' + cid, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({content: text})
+  }).then(r => r.json()).then(d => {
+    if (d.ok) {
+      const area = document.getElementById('posts-area');
+      const div = document.createElement('div');
+      div.className = 'd-flex mb-3';
+      div.innerHTML = `
+        <div class="rounded-circle bg-secondary text-white d-flex align-items-center
+             justify-content-center me-2" style="width:34px;height:34px;min-width:34px;font-size:.85rem">
+          ${d.name[0]}
+        </div>
+        <div>
+          <div class="small fw-bold" style="color:#1a3a6b">${d.name}
+            <span class="text-muted fw-normal ms-2">${d.time}</span>
+          </div>
+          <div class="small mt-1 p-2 rounded" style="background:#f4f6fa">${text}</div>
+        </div>`;
+      area.appendChild(div);
+      area.scrollTop = area.scrollHeight;
+      input.value = '';
+    }
+  });
+}
+</script>
+{% endblock %}

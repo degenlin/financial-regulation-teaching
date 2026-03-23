@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金融监管理论与实践 — 实验答案与解析（完整版）</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Microsoft YaHei", "SimHei", Arial, sans-serif; font-size: 14px; background: #f0f2f5; color: #333; }
+
+  /* 顶部导航 */
+  .navbar { background: linear-gradient(90deg,#1a3a6b,#2e75b6); color:#fff; padding:14px 24px; position:sticky; top:0; z-index:1000; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  .navbar h1 { font-size:18px; font-weight:700; }
+  .navbar a { color:#ffd700; text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid rgba(255,215,0,0.5); border-radius:4px; }
+  .navbar a:hover { background:rgba(255,215,0,0.15); }
+
+  /* 目录 */
+  .toc { background:#fff; border-radius:8px; padding:20px; margin:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08); }
+  .toc h2 { color:#1a3a6b; font-size:16px; margin-bottom:12px; border-bottom:2px solid #1a3a6b; padding-bottom:8px; }
+  .toc-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:10px; }
+  .toc-item { background:linear-gradient(135deg,#1a3a6b,#2e75b6); border-radius:6px; padding:12px 14px; cursor:pointer; }
+  .toc-item a { color:#fff; text-decoration:none; font-weight:600; font-size:13px; display:block; }
+  .toc-item span { color:rgba(255,255,255,0.7); font-size:11px; display:block; margin-top:3px; }
+
+  /* 容器 */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 40px; }
+
+  /* 实验卡片 */
+  .exp-section { background:#fff; border-radius:10px; margin-bottom:30px; box-shadow:0 2px 12px rgba(0,0,0,0.08); overflow:hidden; }
+  .exp-header { padding:18px 24px; color:#fff; display:flex; align-items:center; gap:16px; }
+  .exp-badge { background:rgba(255,255,255,0.2); border-radius:20px; padding:4px 14px; font-size:13px; }
+  .exp-header h2 { font-size:18px; font-weight:700; margin:0; }
+  .exp-header p { font-size:12px; opacity:0.8; margin-top:4px; }
+  .exp-body { padding:24px; }
+
+  /* 区块 */
+  .section { margin-bottom:24px; }
+  .section-title { font-size:14px; font-weight:700; color:#1a3a6b; border-left:4px solid #2e75b6; padding-left:10px; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+
+  /* 表格 */
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { background:#1a3a6b; color:#fff; padding:8px 10px; text-align:left; font-weight:600; }
+  td { padding:8px 10px; border-bottom:1px solid #eee; }
+  tr:nth-child(even) td { background:#f8fafc; }
+  tr:hover td { background:#e8f0fe; }
+  .fail-row td { background:#fff0f0 !important; color:#c0392b; }
+  .pass-row td { background:#f0fff4 !important; color:#1e8b4c; }
+
+  /* 答案框 */
+  .answer-box { background:linear-gradient(135deg,#e8f5e9,#f1f8e9); border:2px solid #1e8b4c; border-radius:8px; padding:16px; margin-top:12px; }
+  .answer-box .answer-label { color:#1e8b4c; font-weight:700; font-size:13px; margin-bottom:8px; }
+  .answer-box .answer-val { font-size:20px; font-weight:700; color:#1a3a6b; }
+  .answer-box .answer-note { font-size:12px; color:#555; margin-top:6px; }
+
+  /* 解析框 */
+  .explain-box { background:#f0f7ff; border-left:4px solid #2e75b6; border-radius:0 6px 6px 0; padding:14px 16px; margin-top:10px; }
+  .explain-box .explain-title { color:#2e75b6; font-weight:700; font-size:13px; margin-bottom:6px; }
+  .explain-box ul { padding-left:18px; }
+  .explain-box li { margin-bottom:4px; line-height:1.6; font-size:13px; color:#444; }
+
+  /* 步骤 */
+  .step { display:flex; gap:12px; margin-bottom:12px; align-items:flex-start; }
+  .step-num { background:#1a3a6b; color:#fff; border-radius:50%; width:24px; height:24px; min-width:24px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
+  .step-content { flex:1; background:#f8fafc; border-radius:6px; padding:10px 14px; font-size:13px; line-height:1.6; }
+  .step-content strong { color:#1a3a6b; }
+
+  /* 计算展示 */
+  .calc-box { background:#1a3a6b; color:#fff; border-radius:8px; padding:16px; font-family:monospace; font-size:13px; margin:12px 0; line-height:1.8; }
+  .calc-box .calc-result { color:#ffd700; font-size:15px; font-weight:700; border-top:1px solid rgba(255,255,255,0.3); margin-top:8px; padding-top:8px; }
+
+  /* 评分标准 */
+  .score-table { background:#fff3cd; border:1px solid #ffc107; border-radius:6px; padding:14px; margin-top:10px; }
+  .score-table table th { background:#e0a800; }
+
+  /* 徽章 */
+  .badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
+  .badge-success { background:#1e8b4c; color:#fff; }
+  .badge-danger { background:#c0392b; color:#fff; }
+  .badge-warning { background:#e0a800; color:#333; }
+  .badge-info { background:#2e75b6; color:#fff; }
+  .badge-secondary { background:#6c757d; color:#fff; }
+
+  /* 警示框 */
+  .alert { border-radius:6px; padding:12px 16px; margin:10px 0; font-size:13px; }
+  .alert-danger { background:#ffeaea; border:1px solid #ffb3b3; color:#c0392b; }
+  .alert-success { background:#eafbea; border:1px solid #a3e6a3; color:#1e7e34; }
+  .alert-warning { background:#fff8e1; border:1px solid #ffd54f; color:#795548; }
+  .alert-info { background:#e3f2fd; border:1px solid #90caf9; color:#1565c0; }
+
+  /* 进度条 */
+  .progress { height:18px; background:#e9ecef; border-radius:9px; overflow:hidden; margin:4px 0; }
+  .progress-bar { height:100%; border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:700; transition:width 0.3s; }
+
+  /* 两列布局 */
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media(max-width:768px) { .row2 { grid-template-columns:1fr; } }
+
+  /* 实验颜色主题 */
+  .header-crisis  { background:linear-gradient(135deg,#1a3a6b,#c0392b); }
+  .header-sandbox { background:linear-gradient(135deg,#1a3a6b,#16a085); }
+  .header-sec     { background:linear-gradient(135deg,#c0392b,#8e44ad); }
+  .header-ins     { background:linear-gradient(135deg,#1a3a6b,#8e44ad); }
+  .header-quant   { background:linear-gradient(135deg,#2c3e50,#3498db); }
+  .header-bank    { background:linear-gradient(135deg,#1a3a6b,#e74c3c); }
+
+  /* 印刷样式 */
+  @media print {
+    .navbar { position:static; }
+    .exp-section { page-break-inside:avoid; }
+    body { background:#fff; }
+    .container { padding:0; }
+  }
+
+  hr { border:none; border-top:1px solid #e0e0e0; margin:16px 0; }
+  .text-muted { color:#888; }
+  .fw-bold { font-weight:700; }
+  .text-danger { color:#c0392b; }
+  .text-success { color:#1e8b4c; }
+  .text-warning { color:#d4ac0d; }
+  .text-primary { color:#2e75b6; }
+  .mb-2 { margin-bottom:8px; }
+  .mt-2 { margin-top:8px; }
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <h1>📚 金融监管理论与实践 — 实验答案与解析完整版</h1>
+  <a href="#exp1">实验一·压力测试</a>
+  <a href="#exp2">实验二·沙盒评审</a>
+  <a href="#exp3">实验三·证券监管</a>
+  <a href="#exp4">实验四·保险偿付</a>
+  <a href="#exp5">实验五·量化监管</a>
+  <a href="#exp6">实验六·银行风控</a>
+</div>
+
+<div class="toc" style="margin:20px;">
+  <h2>📋 目录 — 六大仿真实验</h2>
+  <div class="toc-grid">
+    <div class="toc-item"><a href="#exp1">实验一：2008金融危机银行压力测试<span>第3章 · 巴塞尔III · 5家银行 × 3情景</span></a></div>
+    <div class="toc-item"><a href="#exp2">实验二：监管沙盒申请评审<span>第8章 · 金融科技 · FCA五准则 · 4家申请</span></a></div>
+    <div class="toc-item"><a href="#exp3">实验三：证券监管综合<span>第4章 · 内幕交易识别 + 信披合规判断</span></a></div>
+    <div class="toc-item"><a href="#exp4">实验四：保险偿付能力计算<span>第5章 · C-ROSS偿二代 · 2家保险公司</span></a></div>
+    <div class="toc-item"><a href="#exp5">实验五：量化监管工具<span>第10章 · VaR/CoVaR/CCyB</span></a></div>
+    <div class="toc-item"><a href="#exp6">实验六：银行风险控制综合<span>第3章 · 四类风险事件处置</span></a></div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 实验一：2008金融危机银行压力测试 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="exp-section" id="exp1">
+  <div class="exp-header header-crisis">
+    <div>
+      <span class="exp-badge">实验一 · 第3章</span>
+      <h2>2008金融危机银行压力测试（仿真）</h2>
+      <p>基于2008年危机情景，计算五大银行在不同压力下的资本充足率变化，提出监管处置建议</p>
+    </div>
+  </div>
+  <div class="exp-body">
+
+    <div class="section">
+      <div class="section-title">📊 基础数据：五大模拟银行</div>
+      <table>
+        <thead><tr><th>银行</th><th>总资产(亿)</th><th>一级资本(亿)</th><th>初始Tier1比率</th><th>杠杆率</th><th>MBS敞口(亿)</th><th>CDO持仓(亿)</th><th>交易账簿(亿)</th></tr></thead>
+        <tbody>
+          <tr><td>雷曼兄弟银行（模拟）</td><td>6390</td><td>128</td><td>11.7%</td><td>30.7x</td><td>850</td><td>320</td><td>1200</td></tr>
+          <tr><td>美林银行（模拟）</td><td>9410</td><td>214</td><td>8.3%</td><td>27.9x</td><td>1100</td><td>480</td><td>1900</td></tr>
+          <tr><td>花旗集团（模拟）</td><td>21870</td><td>890</td><td>7.1%</td><td>19.4x</td><td>980</td><td>530</td><td>2300</td></tr>
+          <tr><td>贝尔斯登（模拟）</td><td>3950</td><td>71</td><td>10.2%</td><td>34.0x</td><td>420</td><td>180</td><td>890</td></tr>
+          <tr><td>安全储备商业银行（模拟）</td><td>880</td><td>95</td><td>14.8%</td><td>9.3x</td><td>120</td><td>10</td><td>80</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⚡ 三大压力情景参数</div>
+      <table>
+        <thead><tr><th>情景</th><th>GDP冲击</th><th>房价下跌</th><th>违约率上升</th><th>市场折扣率</th><th>流动性冲击</th><th>类比事件</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-warning">S1 轻度压力</span></td><td>-1.0%</td><td>-10%</td><td>+1.5%</td><td>15%</td><td>10%</td><td>2001年网络泡沫</td></tr>
+          <tr><td><span class="badge" style="background:#e67e22;color:#fff">S2 中度压力</span></td><td>-3.5%</td><td>-25%</td><td>+4.0%</td><td>35%</td><td>25%</td><td>2008年Q3危机初期</td></tr>
+          <tr><td><span class="badge badge-danger">S3 严重压力</span></td><td>-6.0%</td><td>-40%</td><td>+8.0%</td><td>55%</td><td>50%</td><td>2008年10月崩溃边缘</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📐 计算公式说明</div>
+      <div class="calc-box">
+信用损失 = 总资产 × 30% × (违约率上升幅度 / 100)
+市场损失 = 交易账簿 × haircut + CDO × haircut × 1.5 + MBS敞口 × haircut × 0.8
+流动性成本 = 总资产 × 流动性冲击 × 2%
+──────────────────────────────────────────────
+总损失 = 信用损失 + 市场损失 + 流动性成本
+压后资本 = 一级资本 - 总损失
+RWA增幅 = 1 + |GDP冲击| × 3%
+新RWA = 总资产 × 65% × RWA增幅
+<span class="calc-result">压后Tier1充足率 = 压后资本 / 新RWA × 100%</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">✅ 完整计算结果（含答案）</div>
+
+      <h4 style="color:#c0392b;margin:12px 0 8px">S2 中度压力情景（最重要场景，参数：违约率+4%，haircut=35%，流动性冲击25%）</h4>
+      <table>
+        <thead><tr><th>银行</th><th>信用损失</th><th>市场损失</th><th>流动性成本</th><th>总损失</th><th>压后资本</th><th>新RWA</th><th>压后Tier1%</th><th>结论</th></tr></thead>
+        <tbody>
+          <tr class="fail-row">
+            <td>雷曼兄弟</td><td>76.7</td><td>854.5</td><td>31.9</td><td>963.1</td><td>-835.1</td><td>4152.8</td><td><strong>-20.1%</strong></td><td>❌ 崩溃</td>
+          </tr>
+          <tr class="fail-row">
+            <td>美林银行</td><td>113.0</td><td>1249.8</td><td>47.1</td><td>1409.9</td><td>-1195.9</td><td>6105.5</td><td><strong>-19.6%</strong></td><td>❌ 崩溃</td>
+          </tr>
+          <tr class="fail-row">
+            <td>花旗集团</td><td>262.4</td><td>2003.0</td><td>109.4</td><td>2374.8</td><td>-1484.8</td><td>14214.8</td><td><strong>-10.4%</strong></td><td>❌ 崩溃</td>
+          </tr>
+          <tr class="fail-row">
+            <td>贝尔斯登</td><td>47.4</td><td>656.1</td><td>19.8</td><td>723.3</td><td>-652.3</td><td>2566.7</td><td><strong>-25.4%</strong></td><td>❌ 崩溃</td>
+          </tr>
+          <tr class="pass-row">
+            <td>安全储备商业银行</td><td>10.6</td><td>84.5</td><td>4.4</td><td>99.5</td><td>-4.5</td><td>572.0</td><td><strong>-0.8%</strong></td><td>⚠️ 勉强</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-danger mt-2">
+        <strong>⚠️ 关键结论：</strong>在中度压力（S2）下，4家高杠杆投行全部资本耗尽，Tier1充足率跌破零。仅传统商业银行（安全储备）接近临界值。这正是2008年金融危机的真实写照。
+      </div>
+
+      <h4 style="color:#d35400;margin:16px 0 8px">S1 轻度压力情景（参数：违约率+1.5%，haircut=15%，流动性冲击10%）</h4>
+      <table>
+        <thead><tr><th>银行</th><th>信用损失</th><th>市场损失</th><th>流动性成本</th><th>总损失</th><th>压后Tier1%</th><th>达标(≥6%)?</th></tr></thead>
+        <tbody>
+          <tr class="fail-row"><td>雷曼兄弟</td><td>28.8</td><td>371.7</td><td>12.8</td><td>413.3</td><td>-22.4%</td><td>❌</td></tr>
+          <tr class="fail-row"><td>美林银行</td><td>42.3</td><td>543.0</td><td>18.8</td><td>604.1</td><td>-20.5%</td><td>❌</td></tr>
+          <tr class="fail-row"><td>花旗集团</td><td>98.4</td><td>872.3</td><td>43.7</td><td>1014.4</td><td>-0.9%</td><td>❌</td></tr>
+          <tr class="fail-row"><td>贝尔斯登</td><td>17.8</td><td>285.0</td><td>7.9</td><td>310.7</td><td>-18.6%</td><td>❌</td></tr>
+          <tr class="pass-row"><td>安全储备商业银行</td><td>3.96</td><td>36.3</td><td>1.76</td><td>42.0</td><td>8.6%</td><td>✅</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🎯 标准答案：各问题答案与解释</div>
+
+      <div class="step">
+        <div class="step-num">Q1</div>
+        <div class="step-content">
+          <strong>选择分析银行并说明选择理由</strong><br>
+          <span class="badge badge-danger">参考答案</span> 推荐分析<strong>雷曼兄弟</strong>或<strong>花旗集团</strong><br>
+          <strong>理由：</strong>雷曼兄弟杠杆率30.7倍，CDO持仓320亿，是最典型的高风险投行；花旗集团是系统重要性机构（总资产21870亿），影响最大。两者均在S2情景下完全崩溃。
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">Q2</div>
+        <div class="step-content">
+          <strong>计算S2中度压力下的资本充足率（以雷曼兄弟为例）</strong><br>
+          <span class="badge badge-success">详细步骤</span>
+          <div class="calc-box" style="margin-top:8px">
+信用损失 = 6390 × 0.30 × (4.0/100) = 76.68 ≈ 76.7亿
+市场损失 = 1200×0.35 + 320×0.35×1.5 + 850×0.35×0.8
+         = 420 + 168 + 238 = 826 ≈ 826亿
+流动性成本 = 6390 × 0.25 × 0.02 = 31.95 ≈ 31.9亿
+总损失 = 76.7 + 826 + 31.9 = 934.6亿
+压后资本 = 128 - 934.6 = -806.6亿
+RWA增幅 = 1 + 3.5 × 0.03 = 1.105
+新RWA = 6390 × 0.65 × 1.105 = 4592.0亿
+<span class="calc-result">压后Tier1 = -806.6/4592.0×100% ≈ -17.6% （远低于6%最低要求）</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">Q3</div>
+        <div class="step-content">
+          <strong>识别资本最脆弱的银行并分析原因</strong><br>
+          <span class="badge badge-danger">答案：贝尔斯登（模拟）</span><br>
+          原因：① 杠杆率最高（34.0倍），一级资本仅71亿，抗风险缓冲极小；② 回购融资依赖度极高，流动性最脆弱；③ 房贷敞口相对资本比率最高（420/71=5.9倍）
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">Q4</div>
+        <div class="step-content">
+          <strong>监管处置建议（标准答案要点）</strong><br>
+          <span class="badge badge-info">针对严重不达标银行（雷曼/美林/花旗/贝尔斯登）：</span><br><br>
+          ① <strong>立即叫停高风险业务</strong>：停止新增CDO承销和高杠杆交易<br>
+          ② <strong>强制增资</strong>：要求在6个月内通过发行普通股补充资本至最低要求<br>
+          ③ <strong>资产处置计划</strong>：有序出售交易账簿资产，降低杠杆率至15倍以内<br>
+          ④ <strong>流动性支持</strong>：向美联储申请紧急流动性援助（TARP/TALF）<br>
+          ⑤ <strong>系统性处置</strong>：对于无法救助的机构启动有序破产程序（Dodd-Frank法）<br>
+          <span class="badge badge-success">传统银行（安全储备）</span> 维持监控，要求提交压力测试报告
+        </div>
+      </div>
+    </div>
+
+    <div class="explain-box">
+      <div class="explain-title">📖 核心知识点解析</div>
+      <ul>
+        <li><strong>巴塞尔III最低要求：</strong>Tier1充足率≥6%（含留存缓冲则为8.5%）；CET1≥4.5%；LCR≥100%；杠杆率≥3%</li>
+        <li><strong>压力测试意义：</strong>检验银行在极端情景下的资本充足性，是宏观审慎监管的核心工具</li>
+        <li><strong>高杠杆的危险：</strong>30倍杠杆意味着资产价值只需下跌3.3%即可耗尽全部资本</li>
+        <li><strong>2008危机教训：</strong>投行监管缺失（不受银行监管约束）+ 场外衍生品（CDO/CDS）不透明是危机根源</li>
+        <li><strong>改革成果：</strong>Dodd-Frank法案要求系统重要性机构接受Federal Reserve监管，执行沃尔克规则（禁止自营交易）</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 实验二：监管沙盒申请评审 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="exp-section" id="exp2">
+  <div class="exp-header header-sandbox">
+    <div>
+      <span class="exp-badge">实验二 · 第8章</span>
+      <h2>监管沙盒申请评审（扮演FCA评审官）</h2>
+      <p>根据FCA五大准则评审4项金融科技产品申请，给出批准/拒绝决定并说明理由</p>
+    </div>
+  </div>
+  <div class="exp-body">
+
+    <div class="section">
+      <div class="section-title">🔑 FCA五大评审准则</div>
+      <table>
+        <thead><tr><th>准则</th><th>中文说明</th><th>关键考量</th></tr></thead>
+        <tbody>
+          <tr><td>genuine_innovation</td><td>真实创新性</td><td>是否为市场首创或对现有方案有显著改进？</td></tr>
+          <tr><td>consumer_benefit</td><td>消费者利益</td><td>能否切实改善用户金融可及性或降低成本？</td></tr>
+          <tr><td>consumer_protection</td><td>消费者保护</td><td>风险披露、退出机制、损失补偿是否完善？</td></tr>
+          <tr><td>regulatory_compliance</td><td>监管合规基础</td><td>是否具备基本合规意识，了解适用法规？</td></tr>
+          <tr><td>readiness</td><td>测试就绪度</td><td>方案是否具体可执行，团队是否准备好？</td></tr>
+        </tbody>
+      </table>
+      <div class="alert alert-info mt-2">📌 <strong>评审原则：</strong>总分42分以上建议批准；低于30分建议拒绝；30-42分有条件批准。实际决策需结合风险等级综合判断。</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">✅ 四家申请评分及标准答案</div>
+
+      <!-- 申请1 -->
+      <div style="border:2px solid #16a085;border-radius:8px;padding:16px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span class="badge badge-info">申请1</span>
+          <strong>智信科技（AI信贷评分系统）</strong>
+          <span class="badge badge-warning">风险：中等</span>
+          <span class="badge" style="background:#16a085;color:#fff;">建议：有条件批准</span>
+        </div>
+        <table>
+          <thead><tr><th>准则</th><th>FCA评分(/10)</th><th>评审要点</th></tr></thead>
+          <tbody>
+            <tr><td>真实创新性</td><td>8/10</td><td>1200个变量机器学习模型，针对无信用记录人群，有明显创新</td></tr>
+            <tr><td>消费者利益</td><td>9/10</td><td>解决农村居民金融排斥问题，普惠性强</td></tr>
+            <tr><td><span class="text-danger">消费者保护</span></td><td><span class="text-danger">6/10</span></td><td>利率24%上限、冷静期3天，但算法黑箱导致用户无法了解拒贷原因</td></tr>
+            <tr><td><span class="text-danger">监管合规</span></td><td><span class="text-danger">5/10</span></td><td>无金融牌照，数据来源（通话记录）的合法性存疑，合规基础薄弱</td></tr>
+            <tr><td>测试就绪度</td><td>7/10</td><td>测试规模1000人合理，有明确退出机制</td></tr>
+          </tbody>
+        </table>
+        <div class="answer-box" style="margin-top:10px">
+          <div class="answer-label">🎯 标准裁决</div>
+          <div class="answer-val">有条件批准</div>
+          <div class="answer-note"><strong>附加条件：</strong>① 申请小额贷款牌照或与持牌机构合作；② 增加算法解释能力（提供拒贷理由）；③ 将测试规模限制在500人以内；④ 提交数据使用合法性证明（电信数据授权协议）</div>
+        </div>
+      </div>
+
+      <!-- 申请2 -->
+      <div style="border:2px solid #1e8b4c;border-radius:8px;padding:16px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span class="badge badge-info">申请2</span>
+          <strong>链金保险科技（区块链参数保险）</strong>
+          <span class="badge badge-success">风险：低</span>
+          <span class="badge badge-success">建议：批准</span>
+        </div>
+        <table>
+          <thead><tr><th>准则</th><th>FCA评分(/10)</th><th>评审要点</th></tr></thead>
+          <tbody>
+            <tr><td>真实创新性</td><td>10/10</td><td>区块链自动赔付参数保险，完全无纸化，全球领先应用</td></tr>
+            <tr><td>消费者利益</td><td>9/10</td><td>农户无需申请理赔，自动赔付，大幅降低理赔门槛</td></tr>
+            <tr><td>消费者保护</td><td>8/10</td><td>智能合约代码已审计，赔付标准透明公开，消费者可预期</td></tr>
+            <tr><td>监管合规</td><td>7/10</td><td>已持互联网保险经纪牌照，合规意识较好，但智能合约法律效力待明确</td></tr>
+            <tr><td>测试就绪度</td><td>8/10</td><td>规模500户适中，数据源（国家气象局）可靠，方案具体</td></tr>
+          </tbody>
+        </table>
+        <div class="answer-box" style="margin-top:10px">
+          <div class="answer-label">🎯 标准裁决</div>
+          <div class="answer-val">批准进入沙盒</div>
+          <div class="answer-note"><strong>理由：</strong>评分最高（42/50），五项准则均超过7分，风险等级低，已持牌经营，创新价值显著。<strong>监控要点：</strong>智能合约争议处理机制完善性</div>
+        </div>
+      </div>
+
+      <!-- 申请3 -->
+      <div style="border:2px solid #c0392b;border-radius:8px;padding:16px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span class="badge badge-info">申请3</span>
+          <strong>数字支付网络（企业间稳定币结算）</strong>
+          <span class="badge badge-danger">风险：高</span>
+          <span class="badge badge-danger">建议：拒绝</span>
+        </div>
+        <table>
+          <thead><tr><th>准则</th><th>FCA评分(/10)</th><th>评审要点</th></tr></thead>
+          <tbody>
+            <tr><td>真实创新性</td><td>7/10</td><td>稳定币跨境结算有一定创新，但全球已有多家尝试</td></tr>
+            <tr><td>消费者利益</td><td>7/10</td><td>可提升中小企业跨境结算效率，成本降低</td></tr>
+            <tr><td><span class="text-danger">消费者保护</span></td><td><span class="text-danger">5/10</span></td><td>储备资产安全性未经独立验证，稳定币脱锚风险显著</td></tr>
+            <tr><td><span class="text-danger">监管合规</span></td><td><span class="text-danger">4/10</span></td><td>涉及货币发行权边界，AML/CFT合规框架不完整，监管合规分数最低</td></tr>
+            <tr><td>测试就绪度</td><td>6/10</td><td>方案有一定完整性，但50家企业测试规模下的系统风险评估缺失</td></tr>
+          </tbody>
+        </table>
+        <div class="answer-box" style="background:linear-gradient(135deg,#ffeaea,#fff0f0);border-color:#c0392b;margin-top:10px">
+          <div class="answer-label" style="color:#c0392b">❌ 标准裁决</div>
+          <div class="answer-val" style="color:#c0392b">拒绝</div>
+          <div class="answer-note"><strong>核心理由：</strong>① 监管合规分仅4分，涉及货币发行权（属于中央银行专属权力），私人机构无权发行货币等价物；② AML/CFT（反洗钱/反恐融资）框架缺失，跨境稳定币是监管最高风险点；③ 系统性风险传染评估缺失。<strong>建议：</strong>先完善合规框架、取得货币监管机构书面授权后重新申请</div>
+        </div>
+      </div>
+
+      <!-- 申请4 -->
+      <div style="border:2px solid #2e75b6;border-radius:8px;padding:16px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span class="badge badge-info">申请4</span>
+          <strong>惠民理财（AI智能投顾）</strong>
+          <span class="badge badge-warning">风险：中等</span>
+          <span class="badge badge-success">建议：批准</span>
+        </div>
+        <table>
+          <thead><tr><th>准则</th><th>FCA评分(/10)</th><th>评审要点</th></tr></thead>
+          <tbody>
+            <tr><td>真实创新性</td><td>7/10</td><td>GPT+个性化基金推荐有一定创新，但智能投顾市场已有竞争者</td></tr>
+            <tr><td>消费者利益</td><td>8/10</td><td>0.3%管理费极低，100元起步，大幅降低理财门槛，普惠价值高</td></tr>
+            <tr><td>消费者保护</td><td>7/10</td><td>强制风险测评、亏损预警、一键赎回，消费者保护措施充分</td></tr>
+            <tr><td>监管合规</td><td>7/10</td><td>已持基金销售牌照，合规基础良好；投顾资质问题需在沙盒期解决</td></tr>
+            <tr><td>测试就绪度</td><td>8/10</td><td>测试规模2000人，方案详细，有明确的监控指标</td></tr>
+          </tbody>
+        </table>
+        <div class="answer-box" style="margin-top:10px">
+          <div class="answer-label">🎯 标准裁决</div>
+          <div class="answer-val">批准进入沙盒</div>
+          <div class="answer-note"><strong>附加条件：</strong>① 沙盒期间申请投资顾问牌照；② 向用户明确披露"AI推荐不构成投资建议"；③ 建立AI推荐算法错误的赔偿预案；④ 6个月后提交用户收益/风险匹配度报告</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explain-box">
+      <div class="explain-title">📖 监管沙盒知识要点</div>
+      <ul>
+        <li><strong>沙盒制度起源：</strong>英国FCA于2016年创立，允许金融科技公司在受控环境中测试创新产品，测试期间豁免部分监管要求</li>
+        <li><strong>核心设计：</strong>规模限制（限定用户数）+ 时间限制（通常6-12个月）+ 消费者补偿机制（测试出问题由申请方赔偿）</li>
+        <li><strong>中国实践：</strong>人民银行于2019年启动"监管沙盒"试点（称为"金融科技创新监管试点"），已在北京等多地推行</li>
+        <li><strong>包容审慎原则：</strong>不因为创新而直接禁止，但要设置明确的消费者保护底线（最高优先级准则）</li>
+        <li><strong>拒绝标准：</strong>当监管合规分&lt;5分或风险等级为"高"且消费者保护分&lt;6分时，应拒绝申请</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 实验三：证券监管 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="exp-section" id="exp3">
+  <div class="exp-header header-sec">
+    <div>
+      <span class="exp-badge">实验三 · 第4章</span>
+      <h2>证券监管：内幕交易识别 + 信息披露合规判断</h2>
+      <p>识别两个案例中的内幕交易嫌疑人（Part A），并判断5项信息披露行为是否违规（Part B）</p>
+    </div>
+  </div>
+  <div class="exp-body">
+
+    <div class="section">
+      <div class="section-title">🔍 Part A：内幕交易识别（满分60分）</div>
+
+      <h4 style="margin:12px 0 8px;color:#c0392b">案例1：华芯半导体（A股）— 并购重组内幕交易</h4>
+      <div style="background:#f8f0ff;border-radius:6px;padding:12px;margin-bottom:12px;font-size:13px;">
+        <strong>事件：</strong>2024年3月10日宣布以150亿收购美国ArTech芯片公司，内幕信息形成日：2024年1月15日（董事会秘密讨论日），公告日：2024年3月10日
+      </div>
+      <table>
+        <thead><tr><th>嫌疑人</th><th>买入日</th><th>股数（万股）</th><th>均价</th><th>获利（万元）</th><th>关联关系</th><th><span class="badge badge-danger">是否内幕交易</span></th></tr></thead>
+        <tbody>
+          <tr class="fail-row">
+            <td><strong>张某（董事会秘书）</strong></td><td>2024-01-18</td><td>20</td><td>32.5</td><td>214</td><td>出席1月15日会议，直接知情人</td><td>✅ <strong>是</strong></td>
+          </tr>
+          <tr class="fail-row">
+            <td><strong>李某（张某配偶）</strong></td><td>2024-01-20</td><td>15</td><td>32.8</td><td>153</td><td>账户由张某管理，间接知情人</td><td>✅ <strong>是</strong></td>
+          </tr>
+          <tr class="fail-row">
+            <td><strong>王某（投行保荐人）</strong></td><td>2024-02-05</td><td>8</td><td>34.1</td><td>55.2</td><td>参与尽调，签署保密协议仍违规</td><td>✅ <strong>是</strong></td>
+          </tr>
+          <tr class="pass-row">
+            <td>赵某（普通股民）</td><td>2024-03-08</td><td>5</td><td>38.5</td><td>25</td><td>无任何关联，基于技术分析</td><td>❌ <strong>不是</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="explain-box" style="margin-top:10px">
+        <div class="explain-title">案例1关键解析</div>
+        <ul>
+          <li><strong>张某：</strong>直接知情人（参加了1月15日会议），在内幕信息形成3天后买入，构成内幕交易无疑</li>
+          <li><strong>李某：</strong>虽非知情人，但账户由张某管理，视为利用张某内幕信息交易，《证券法》第53条将"账户管理人"纳入内幕人范围</li>
+          <li><strong>王某：</strong>投行保荐人参与尽调时即已知悉内幕信息，签署保密协议表明其清楚信息的保密义务，违反保密义务并交易构成内幕交易</li>
+          <li><strong>赵某不构成：</strong>买入时间2024-03-08，仅早于公告2天，且无任何关联关系证据，属于巧合，不满足"利用内幕信息"要件</li>
+        </ul>
+      </div>
+
+      <h4 style="margin:16px 0 8px;color:#c0392b">案例2：绿康生物（创业板）— 业绩预警卖空内幕交易</h4>
+      <div style="background:#f8f0ff;border-radius:6px;padding:12px;margin-bottom:12px;font-size:13px;">
+        <strong>事件：</strong>2024年Q3净利润同比降85%，医保集采降价70%，内幕信息形成日：2024年9月1日（管理层知晓集采结果），公告日：2024年10月15日
+      </div>
+      <table>
+        <thead><tr><th>嫌疑人</th><th>操作</th><th>时间</th><th>关联关系</th><th>是否内幕交易</th></tr></thead>
+        <tbody>
+          <tr class="fail-row">
+            <td><strong>陈某（CFO）</strong></td><td>减持自有股份500万股</td><td>2024-09-05</td><td>公司CFO，直接知悉集采结果</td><td>✅ <strong>是</strong>（且违反窗口期）</td>
+          </tr>
+          <tr class="fail-row">
+            <td><strong>刘某（基金经理）</strong></td><td>减持基金持仓100万股</td><td>2024-09-20</td><td>通过公司IR获取非公开数据</td><td>✅ <strong>是</strong>（选择性披露受益方）</td>
+          </tr>
+          <tr class="pass-row">
+            <td>周某（散户）</td><td>买入20000股（后亏损）</td><td>2024-09-10</td><td>普通投资者，看好基本面</td><td>❌ <strong>不是</strong>（系受害者）</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="explain-box" style="margin-top:10px">
+        <div class="explain-title">案例2关键解析</div>
+        <ul>
+          <li><strong>卖空型内幕交易：</strong>知悉利空内幕信息后减持（做空）同样构成内幕交易，不仅限于买入后获利</li>
+          <li><strong>陈某双重违规：</strong>① 内幕交易（知悉集采利空后减持）；② 违反高管窗口期规定（业绩披露前30天内禁止交易）</li>
+          <li><strong>刘某（基金经理）：</strong>通过IR渠道获取非公开数据本身就是信息违规（证券公司合规红线：不得通过非正式渠道获取上市公司内部信息）</li>
+          <li><strong>周某是受害者：</strong>因信息不对称在内幕交易活跃期间买入，《证券法》第85条赋予其向内幕交易人提起民事赔偿诉讼的权利</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📋 Part B：信息披露合规判断（满分40分，每题8分）</div>
+      <table>
+        <thead><tr><th>#</th><th>类别</th><th>情景描述</th><th>答案</th><th>违规类型/依据</th></tr></thead>
+        <tbody>
+          <tr class="fail-row">
+            <td>1</td><td>及时性</td><td>4月2日签署投资协议，4月8日才公告（间隔4个交易日）</td><td><strong>违规 ✗</strong></td><td>应在2个交易日内披露；《上市公司信息披露管理办法》第22条</td>
+          </tr>
+          <tr class="fail-row">
+            <td>2</td><td>完整性</td><td>年报漏报2.3亿元无息关联借款</td><td><strong>违规 ✗</strong></td><td>重大关联交易漏报；金额超净资产5%须充分披露</td>
+          </tr>
+          <tr class="fail-row">
+            <td>3</td><td>准确性</td><td>公告称"已获批复"，实际仅完成意向签约</td><td><strong>违规 ✗</strong></td><td>信息表述实质性误导；《证券法》第78条禁止虚假记载或误导性陈述</td>
+          </tr>
+          <tr class="pass-row">
+            <td>4</td><td>格式规范</td><td>临时公告采用证监会标准格式，内容完整</td><td><strong>不违规 ✓</strong></td><td>符合《上市公司信息披露管理办法》格式要求</td>
+          </tr>
+          <tr class="fail-row">
+            <td>5</td><td>公平披露</td><td>CEO在非公开路演中向部分机构透露未公告季报数据</td><td><strong>违规 ✗</strong></td><td>选择性披露违规；重大信息须同步向全体投资者披露</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="answer-box">
+        <div class="answer-label">🎯 综合得分参考</div>
+        <div class="answer-val">Part A：案例1全对+案例2全对 = 60分 | Part B：4/5违规+1/5不违规（第4题）= 40分</div>
+        <div class="answer-note"><strong>满分=100分</strong>：内幕交易每案10分×6人 + 信披每题8分×5题 = 60+40</div>
+      </div>
+    </div>
+
+    <div class="explain-box">
+      <div class="explain-title">📖 证券监管核心知识点</div>
+      <ul>
+        <li><strong>内幕交易三要素：</strong>① 内幕信息（重大未公开信息）；② 知情人身份（直接/间接）；③ 利用内幕信息从事交易。缺一不可</li>
+        <li><strong>法律后果：</strong>没收违法所得 + 1至5倍罚款；情节严重者处5年有期徒刑；上市公司高管还面临行政处罚和市场禁入</li>
+        <li><strong>信披四原则：</strong>及时性（2个交易日）、完整性（不得选择性披露）、准确性（不得有误导性陈述）、公平性（同步向全市场披露）</li>
+        <li><strong>2019年新证券法：</strong>增加了证券发行注册制、信披责任强化、集体诉讼制度，民事赔偿责任显著提升</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 实验四：保险偿付能力计算 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="exp-section" id="exp4">
+  <div class="exp-header header-ins">
+    <div>
+      <span class="exp-badge">实验四 · 第5章</span>
+      <h2>保险偿付能力计算（C-ROSS偿二代）</h2>
+      <p>计算保险公司最低资本需求与综合/核心偿付能力充足率，给出监管诊断意见</p>
+    </div>
+  </div>
+  <div class="exp-body">
+
+    <div class="section">
+      <div class="section-title">📐 C-ROSS计算框架</div>
+      <div class="calc-box">
+最低资本 = √(保险风险²  +  市场风险²  +  信用风险²)  +  操作风险  +  利率风险附加
+
+保险风险最低资本 = Σ(责任准备金 × 风险因子)
+市场风险最低资本 = Σ(资产金额 × 市场风险因子)
+信用风险最低资本 = Σ(风险因子>1%的资产金额 × 市场风险因子 × 50%)
+操作风险最低资本 = Σ(准备金×15%) × 操作风险系数
+<span class="calc-result">综合偿付能力充足率 = 实际资本 / 最低资本 × 100%（达标：≥100%）
+核心偿付能力充足率 = 核心资本 / 最低资本 × 100%（达标：≥50%）</span>
+      </div>
+    </div>
+
+    <!-- 华泰人寿 -->
+    <div class="section">
+      <div class="section-title">🏢 案例A：华泰人寿（中型寿险公司）完整计算</div>
+
+      <div class="row2">
+        <div>
+          <h5 style="margin-bottom:8px;color:#8e44ad">保险业务风险数据</h5>
+          <table>
+            <thead><tr><th>险种</th><th>准备金(亿)</th><th>风险因子</th><th>风险资本(亿)</th></tr></thead>
+            <tbody>
+              <tr><td>长期寿险</td><td>320</td><td>4.5%</td><td>14.40</td></tr>
+              <tr><td>健康险</td><td>80</td><td>5.5%</td><td>4.40</td></tr>
+              <tr><td>万能险</td><td>150</td><td>7.0%</td><td>10.50</td></tr>
+              <tr><td>年金险</td><td>200</td><td>4.0%</td><td>8.00</td></tr>
+              <tr style="background:#e8f0fe;font-weight:700"><td><strong>合计（保险风险）</strong></td><td>750</td><td>—</td><td><strong>37.30</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h5 style="margin-bottom:8px;color:#2e75b6">投资资产市场风险数据</h5>
+          <table>
+            <thead><tr><th>资产类别</th><th>金额(亿)</th><th>风险因子</th><th>市场风险资本</th></tr></thead>
+            <tbody>
+              <tr><td>国债</td><td>180</td><td>0.5%</td><td>0.90</td></tr>
+              <tr><td>企业债</td><td>120</td><td>2.5%</td><td>3.00</td></tr>
+              <tr class="fail-row"><td>股票</td><td>80</td><td>32.0%</td><td>25.60</td></tr>
+              <tr class="fail-row"><td>不动产</td><td>60</td><td>15.0%</td><td>9.00</td></tr>
+              <tr><td>银行存款</td><td>220</td><td>0.5%</td><td>1.10</td></tr>
+              <tr style="background:#e8f0fe;font-weight:700"><td><strong>合计（市场风险）</strong></td><td>660</td><td>—</td><td><strong>39.60</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="calc-box" style="margin-top:16px">
+<strong style="color:#ffd700">步骤1：信用风险（风险因子>1%的资产×因子×50%）</strong>
+企业债：120 × 2.5% × 50% = 1.50亿
+股票：  80 × 32.0% × 50% = 12.80亿
+不动产：60 × 15.0% × 50% = 4.50亿
+信用风险合计 = 18.80亿
+
+<strong style="color:#ffd700">步骤2：操作风险（保费估算×系数）</strong>
+保费估算 = (320+80+150+200) × 15% = 750 × 15% = 112.5亿
+操作风险 = 112.5 × 8% = 9.00亿
+
+<strong style="color:#ffd700">步骤3：利率风险附加 = 12.00亿（题目直接给出）</strong>
+
+<strong style="color:#ffd700">步骤4：汇总计算最低资本</strong>
+最低资本 = √(37.30² + 39.60² + 18.80²) + 9.00 + 12.00
+        = √(1391.29 + 1568.16 + 353.44) + 21.00
+        = √3312.89 + 21.00
+        = 57.56 + 21.00
+        = <span style="color:#ffd700">78.56亿元</span>
+
+<strong style="color:#ffd700">步骤5：偿付能力充足率</strong>
+<span class="calc-result">综合偿付能力充足率 = 85.0 / 78.56 × 100% = 108.2%  ✅（≥100% 达标）
+核心偿付能力充足率 = 72.0 / 78.56 × 100% = 91.6%   ✅（≥50% 达标）
+监管评级：B类（100%-150%区间）</span>
+      </div>
+
+      <div class="answer-box">
+        <div class="answer-label">🎯 华泰人寿标准答案</div>
+        <div style="display:flex;gap:24px;flex-wrap:wrap">
+          <div><div class="answer-val" style="font-size:28px;color:#1e8b4c">108.2%</div><div class="answer-note">综合偿付能力充足率（允许误差±3%）</div></div>
+          <div><div class="answer-val" style="font-size:28px;color:#1e8b4c">91.6%</div><div class="answer-note">核心偿付能力充足率（允许误差±3%）</div></div>
+          <div><div class="answer-val" style="font-size:28px;color:#1e8b4c">达标</div><div class="answer-note">综合达标（≥100%）且核心达标（≥50%）</div></div>
+        </div>
+        <hr>
+        <div class="answer-note"><strong>监管诊断标准答案：</strong>华泰人寿综合偿付能力充足率108.2%，略高于100%达标线，风险评级B类，处于正常区间。<strong>主要风险来源：</strong>股票资产（25.60亿）和不动产（9.00亿）占市场风险的87%，高风险资产配置较多。<strong>监管建议：</strong>① 关注股票持仓比例，建议逐步压降至总资产10%以内；② 加强万能险利率风险管理；③ 若综合偿付率降至100%以下，需报告监管并制定补救计划</div>
+      </div>
+    </div>
+
+    <!-- 安盛财险 -->
+    <div class="section">
+      <div class="section-title">🏢 案例B：安盛财险（中型财险公司）参考计算</div>
+      <div class="calc-box">
+保险风险 = 60×18% + 30×22% + 15×25% + 8×30% = 10.8 + 6.6 + 3.75 + 2.4 = <span style="color:#ffd700">23.55亿</span>
+市场风险 = 55×0.5% + 30×2.5% + 15×32% + 65×0.5% = 0.275 + 0.75 + 4.8 + 0.325 = <span style="color:#ffd700">6.15亿</span>
+信用风险 = 30×2.5%×50% + 15×32%×50% = 0.375 + 2.4 = <span style="color:#ffd700">2.775亿</span>
+操作风险 = (60+30+15+8)×15%×10% = 113×15%×10% = 1.695亿 ≈ <span style="color:#ffd700">1.70亿</span>
+利率风险附加 = <span style="color:#ffd700">3.00亿</span>
+最低资本 = √(23.55²+6.15²+2.775²)+1.70+3.0 = √(554.60+37.82+7.70)+4.70
+        = √600.12 + 4.70 = 24.50 + 4.70 = <span style="color:#ffd700">29.20亿</span>
+<span class="calc-result">综合偿付能力充足率 = 45.0/29.20×100% = 154.1%  ✅ A类（≥150% 优秀）
+核心偿付能力充足率 = 40.0/29.20×100% = 136.9%  ✅ 达标</span>
+      </div>
+    </div>
+
+    <div class="explain-box">
+      <div class="explain-title">📖 C-ROSS核心知识点</div>
+      <ul>
+        <li><strong>三支柱框架：</strong>支柱一（定量资本）+ 支柱二（定性监管，风险管理评估）+ 支柱三（市场约束，信息披露）</li>
+        <li><strong>风险聚合方法：</strong>保险/市场/信用三类风险用平方根法（考虑相关性，有分散效应），操作和利率风险直接相加</li>
+        <li><strong>监管评级：</strong>A类(≥150%) → B类(100%-150%) → C类(75%-100%) → D类(<75%)；C类和D类需采取限制性措施</li>
+        <li><strong>万能险风险：</strong>万能险风险因子(7%)高于传统寿险(4.5%)，因其兼具保险与投资属性，流动性风险更高</li>
+        <li><strong>股票风险因子32%：</strong>反映股市波动对保险公司偿付能力的冲击，是所有资产中最高的风险因子之一</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 实验五：量化监管 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="exp-section" id="exp5">
+  <div class="exp-header header-quant">
+    <div>
+      <span class="exp-badge">实验五 · 第10章</span>
+      <h2>量化监管工具：VaR / CoVaR / 逆周期资本缓冲（CCyB）</h2>
+      <p>运用系统性风险测量工具，分析银行风险贡献，给出CCyB建议</p>
+    </div>
+  </div>
+  <div class="exp-body">
+
+    <div class="section">
+      <div class="section-title">📊 银行数据与风险指标</div>
+      <table>
+        <thead><tr><th>银行</th><th>Beta</th><th>波动率</th><th>系统相关性</th><th>总资产(亿)</th><th>杠杆率</th><th>VaR(99%)</th><th>ΔCoVaR贡献</th></tr></thead>
+        <tbody>
+          <tr><td>工商银行（模拟）</td><td>0.85</td><td>18%</td><td>0.72</td><td>37000</td><td>12.5x</td><td>2.8%</td><td>3.2%</td></tr>
+          <tr><td>招商银行（模拟）</td><td>1.10</td><td>22%</td><td>0.68</td><td>9800</td><td>14.2x</td><td>4.1%</td><td>4.8%</td></tr>
+          <tr class="fail-row"><td><strong>平安银行（模拟）</strong></td><td><strong>1.25</strong></td><td><strong>26%</strong></td><td>0.61</td><td>5200</td><td>15.8x</td><td>5.3%</td><td><span class="text-danger"><strong>5.7%（最高）</strong></span></td></tr>
+          <tr><td>宁波银行（模拟）</td><td>1.35</td><td>29%</td><td>0.55</td><td>2800</td><td>13.1x</td><td>6.2%</td><td>5.1%</td></tr>
+          <tr class="fail-row"><td><strong>中小农商行（模拟）</strong></td><td>0.65</td><td>32%</td><td>0.42</td><td>450</td><td>11.3x</td><td><span class="text-danger"><strong>7.8%（最高）</strong></span></td><td>2.1%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📈 投资组合周收益率（12周历史数据）</div>
+      <table>
+        <thead><tr><th>周次</th><th>W1</th><th>W2</th><th>W3</th><th>W4</th><th>W5</th><th>W6</th><th>W7</th><th>W8</th><th>W9</th><th>W10</th><th>W11</th><th>W12</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>收益率(%)</td><td>0.8</td><td>-1.2</td><td>2.1</td><td>-0.5</td><td>-3.8</td><td>-7.2</td><td class="fail-row"><strong>-12.5</strong></td><td>-4.1</td><td>-1.8</td><td>1.5</td><td>3.2</td><td>0.9</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="alert alert-warning mt-2">📌 W7（-12.5%）为12周中<strong>最大单周亏损</strong>，即历史模拟法下的最大亏损记录</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔑 CCyB规则（信贷/GDP缺口→缓冲率）</div>
+      <table>
+        <thead><tr><th>信贷/GDP缺口</th><th>CCyB建议值</th><th>信号</th><th>含义</th></tr></thead>
+        <tbody>
+          <tr class="pass-row"><td>0% - 2%</td><td>0%</td><td>正常</td><td>信贷扩张正常，无需额外缓冲</td></tr>
+          <tr><td>2% - 5%</td><td>0.5%</td><td>预警</td><td>信贷轻度过热，提前布局</td></tr>
+          <tr class="fail-row" style="background:#fff3cd!important"><td><strong>5% - 10%（当前：8.5%）</strong></td><td><strong>1.5%</strong></td><td><strong>偏热</strong></td><td><strong>信贷明显过热，须计提缓冲</strong></td></tr>
+          <tr class="fail-row"><td>≥10%</td><td>2.5%</td><td>过热</td><td>系统性风险积聚，最高缓冲</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">✅ 四道题标准答案（共100分）</div>
+
+      <div class="step">
+        <div class="step-num">Q1</div>
+        <div class="step-content">
+          <strong>哪家银行对系统性风险贡献最大？ (25分)</strong>
+          <div class="answer-box" style="margin-top:8px">
+            <div class="answer-label">标准答案</div>
+            <div class="answer-val">平安银行（模拟）</div>
+            <div class="answer-note"><strong>依据：</strong>ΔCoVaR贡献值5.7%，是五家银行中最高的。ΔCoVaR（系统条件风险价值增量）衡量的是"当该机构陷入困境时，对金融系统整体造成的额外风险"，是衡量系统性风险贡献的核心指标。<br><strong>注意区分：</strong>中小农商行自身VaR最高(7.8%)，但因其系统关联性最低(0.42)、规模最小(450亿)，对系统的传染能力弱，ΔCoVaR反而最低(2.1%)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">Q2</div>
+        <div class="step-content">
+          <strong>哪家银行自身VaR(99%)最高（个体风险最大）？ (20分)</strong>
+          <div class="answer-box" style="margin-top:8px">
+            <div class="answer-label">标准答案</div>
+            <div class="answer-val">中小农商行（模拟）</div>
+            <div class="answer-note"><strong>依据：</strong>VaR(99%)=7.8%，排名最高。VaR代表在99%置信水平下，一天内最大可能亏损比例。中小农商行VaR高的原因：① 波动率最高(32%)；② 规模小，分散化程度低；③ 客户集中度高<br><strong>政策含义：</strong>监管上需重点监测中小银行的流动性风险和集中度风险，要求其持有更多流动性缓冲</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">Q3</div>
+        <div class="step-content">
+          <strong>根据宏观数据，建议将CCyB设定为多少？ (25分)</strong>
+          <div class="calc-box" style="margin-top:8px">
+当前宏观指标：
+• 信贷/GDP缺口 = 8.5%  ← 关键指标
+• 房价增速 = 6.2%（偏高）
+• 银行间利率利差 = 0.85%（偏高）
+• VIX等价指数 = 28.5（较高）
+• 全社会杠杆率 = 312%（高）
+
+根据CCyB规则：8.5% 处于 5%-10% 区间
+<span class="calc-result">建议CCyB = 1.5%</span>
+          </div>
+          <div class="answer-box" style="margin-top:8px">
+            <div class="answer-label">标准答案</div>
+            <div class="answer-val">1.5%</div>
+            <div class="answer-note"><strong>政策说明：</strong>当前信贷/GDP缺口8.5%，属"偏热"区间，建议将逆周期资本缓冲（CCyB）设定为1.5%。考虑到房价增速和系统杠杆率均偏高，可进一步建议金融稳定委员会审查是否需要叠加宏观审慎工具（如LTV限制）</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">Q4</div>
+        <div class="step-content">
+          <strong>基于历史模拟法，过去12周最大单周损失是多少？ (30分)</strong>
+          <div class="calc-box" style="margin-top:8px">
+历史模拟法步骤：
+1. 列出所有历史收益率：0.8, -1.2, 2.1, -0.5, -3.8, -7.2, <span style="color:#ff6b6b">-12.5</span>, -4.1, -1.8, 1.5, 3.2, 0.9
+2. 找到最小值（最大亏损）：<span style="color:#ff6b6b">-12.5%（第7周）</span>
+3. 这就是历史模拟法下的最大单周损失
+<span class="calc-result">最大单周亏损 = -12.5%（允许误差±1%，即-11.5%至-13.5%均可得分）</span>
+          </div>
+          <div class="answer-box" style="margin-top:8px">
+            <div class="answer-label">标准答案</div>
+            <div class="answer-val">-12.5%</div>
+            <div class="answer-note"><strong>注意：</strong>本题考查历史模拟法（Historical Simulation），直接取历史最坏记录，而非计算VaR（99%置信水平下第1百分位）。填写时注意正负号，损失为负值。<br><strong>区别于VaR：</strong>VaR通常取第1百分位（12条数据中第1个最差的），此处只有12周数据，最差一周就是-12.5%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explain-box">
+      <div class="explain-title">📖 量化监管工具知识点总结</div>
+      <ul>
+        <li><strong>VaR（风险价值）：</strong>在给定置信水平和时间范围内，投资组合可能遭受的最大损失；个体风险度量工具，不考虑系统性</li>
+        <li><strong>CoVaR（系统条件风险价值）：</strong>当某机构处于困境时，整个金融系统的VaR；ΔCoVaR=机构困境时系统VaR - 正常时系统VaR，越高说明该机构对系统风险贡献越大</li>
+        <li><strong>CCyB（逆周期资本缓冲）：</strong>巴塞尔III引入的宏观审慎工具，信贷过热时积累、危机时释放，用于平滑信贷周期；信贷/GDP缺口是主要触发指标</li>
+        <li><strong>系统重要性 ≠ 高VaR：</strong>ΔCoVaR高（系统重要）≠ VaR高（个体风险高）。工商银行VaR低但ΔCoVaR较高（规模大，传染性强）</li>
+        <li><strong>G-SIB附加资本：</strong>全球系统重要性银行须缴纳0.5%-3.5%的附加资本，与ΔCoVaR挂钩</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 实验六：银行风险控制综合实验 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="exp-section" id="exp6">
+  <div class="exp-header header-bank">
+    <div>
+      <span class="exp-badge">实验六 · 第3章</span>
+      <h2>银行风险控制综合实验（兴华商业银行）</h2>
+      <p>模拟银行风控官，处置四类风险事件，并对监管指标进行合规判断</p>
+    </div>
+  </div>
+  <div class="exp-body">
+
+    <div class="section">
+      <div class="section-title">🏦 银行基础数据</div>
+      <div class="row2">
+        <div>
+          <table>
+            <thead><tr><th>指标</th><th>数值</th></tr></thead>
+            <tbody>
+              <tr><td>总资产</td><td>2800亿元</td></tr>
+              <tr><td>贷款余额</td><td>1680亿元</td></tr>
+              <tr><td>一级资本</td><td>196亿元</td></tr>
+              <tr><td>风险加权资产(RWA)</td><td>2100亿元</td></tr>
+              <tr><td>高质量流动资产(HQLA)</td><td>280亿元</td></tr>
+              <tr><td>30日净流出</td><td>245亿元</td></tr>
+              <tr><td>可用稳定资金(ASF)</td><td>1890亿元</td></tr>
+              <tr><td>所需稳定资金(RSF)</td><td>1680亿元</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <table>
+            <thead><tr><th>贷款分类</th><th>金额(亿)</th><th>拨备率</th><th>拨备(亿)</th></tr></thead>
+            <tbody>
+              <tr class="pass-row"><td>正常类</td><td>1512</td><td>1%</td><td>15.12</td></tr>
+              <tr><td>关注类</td><td>126</td><td>2%</td><td>2.52</td></tr>
+              <tr class="fail-row"><td>次级类</td><td>25.2</td><td>25%</td><td>6.30</td></tr>
+              <tr class="fail-row"><td>可疑类</td><td>12.6</td><td>50%</td><td>6.30</td></tr>
+              <tr class="fail-row"><td>损失类</td><td>4.2</td><td>100%</td><td>4.20</td></tr>
+              <tr style="background:#e8f0fe;font-weight:700"><td>合计</td><td>1680</td><td>—</td><td>34.44</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📊 关键监管指标计算结果</div>
+      <div class="calc-box">
+<strong style="color:#ffd700">① 一级资本充足率（Tier1 Ratio）</strong>
+= 一级资本 / 风险加权资产 × 100%
+= 196 / 2100 × 100% = <span class="calc-result">9.33%</span>  ✅（最低要求：6%，含留存缓冲8.5%）
+状态：<span style="color:#4ade80">达标</span>
+
+<strong style="color:#ffd700">② 不良贷款率（NPL Ratio）</strong>
+不良贷款 = 次级+可疑+损失 = 25.2+12.6+4.2 = 42.0亿
+= 42.0 / 1680 × 100% = <span class="calc-result">2.5%</span>  ⚠️（监管警示线通常2%）
+状态：<span style="color:#ffd700">偏高，需关注</span>
+
+<strong style="color:#ffd700">③ 流动性覆盖率（LCR）</strong>
+= HQLA / 30日净现金流出 × 100%
+= 280 / 245 × 100% = <span class="calc-result">114.3%</span>  ✅（最低要求：100%）
+状态：<span style="color:#4ade80">达标</span>
+
+<strong style="color:#ffd700">④ 净稳定资金比率（NSFR）</strong>
+= 可用稳定资金 / 所需稳定资金 × 100%
+= 1890 / 1680 × 100% = <span class="calc-result">112.5%</span>  ✅（最低要求：100%）
+状态：<span style="color:#4ade80">达标</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🚨 四大风险事件处置（标准答案，每题20分）</div>
+
+      <div style="border:2px solid #e74c3c;border-radius:8px;padding:16px;margin-bottom:14px;">
+        <h5 style="color:#e74c3c;margin-bottom:8px">事件1：信用风险 — 恒大地产贷款50亿，逾期90天</h5>
+        <div class="answer-box">
+          <div class="answer-label">🎯 标准处置答案（得分关键词：次级/可疑/拨备/下调/上报）</div>
+          <div style="margin-top:8px">
+            <div class="step">
+              <div class="step-num">①</div>
+              <div class="step-content"><strong>立即下调贷款分类：</strong>将该50亿元贷款从"正常类"下调至"次级类"（逾期90天超过关注类标准），并评估是否需进一步下调至"可疑类"</div>
+            </div>
+            <div class="step">
+              <div class="step-num">②</div>
+              <div class="step-content"><strong>计提专项拨备：</strong>次级类拨备率25%→ 专项拨备 = 50×25% = 12.5亿元；若下调至可疑则需 50×50% = 25亿元</div>
+            </div>
+            <div class="step">
+              <div class="step-num">③</div>
+              <div class="step-content"><strong>上报大额风险暴露：</strong>单一客户贷款50亿/总资产2800亿 = 1.79%，超过风险暴露关注阈值，须向监管部门报告大额风险暴露情况</div>
+            </div>
+            <div class="step">
+              <div class="step-num">④</div>
+              <div class="step-content"><strong>追加抵押担保：</strong>要求借款方追加房产/股权等抵押物，启动法律追偿程序</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="border:2px solid #3498db;border-radius:8px;padding:16px;margin-bottom:14px;">
+        <h5 style="color:#3498db;margin-bottom:8px">事件2：市场风险 — 持有5年期国债200亿，利率上升100bp损失计算</h5>
+        <div class="calc-box" style="margin:8px 0">
+债券久期法计算价格变动：
+损失 ≈ 债券面值 × 修正久期 × 利率变动幅度
+     = 200亿 × 5.2年 × 1.0%
+     = <span class="calc-result">10.4亿元（损失）</span>
+占一级资本比 = 10.4/196 = 5.3%（显著冲击）
+        </div>
+        <div class="answer-box">
+          <div class="answer-label">🎯 标准处置答案（得分关键词：10/久期/对冲/利率互换）</div>
+          <ul style="padding-left:18px;margin-top:8px;font-size:13px;line-height:1.8">
+            <li><strong>量化损失：</strong>利率上升100bp，债券损失约10.4亿元，占当期资本的5.3%，风险显著</li>
+            <li><strong>缩短久期：</strong>将持仓从5年期换至2年期国债，降低利率敏感性；修正久期从5.2年降至2.0年，同样冲击下损失减少60%</li>
+            <li><strong>利率互换对冲：</strong>进入固定端支付/浮动端收取的利率互换合约（Pay Fixed, Receive Floating），锁定融资成本</li>
+            <li><strong>建立利率风险限额：</strong>设定DV01（每1bp利率变动的损失额）上限，触发自动减仓机制</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="border:2px solid #e67e22;border-radius:8px;padding:16px;margin-bottom:14px;">
+        <h5 style="color:#e67e22;margin-bottom:8px">事件3：操作风险 — 支行行长与客户勾结，虚假贷款挪用1.2亿</h5>
+        <div class="answer-box">
+          <div class="answer-label">🎯 标准处置答案（得分关键词：应急/拨备/报告/审计）</div>
+          <ul style="padding-left:18px;margin-top:8px;font-size:13px;line-height:1.8">
+            <li><strong>启动应急预案：</strong>立即隔离涉案分支机构的贷款审批权限，成立专项处置小组</li>
+            <li><strong>全额计提损失拨备：</strong>对1.2亿元涉嫌挪用资金按损失类（100%）全额计提专项拨备（1.2亿）</li>
+            <li><strong>向监管部门报告：</strong>重大操作风险事件须在24小时内向银行监管机构报告（《银行业金融机构重大突发事件应急预案管理规定》）</li>
+            <li><strong>全行内部审计排查：</strong>启动全系统贷款档案审计，排查是否存在其他类似操作风险事件；强化内控机制</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="border:2px solid #8e44ad;border-radius:8px;padding:16px;margin-bottom:14px;">
+        <h5 style="color:#8e44ad;margin-bottom:8px">事件4：流动性风险 — 市场传言，同业融资到期80亿无法续作</h5>
+        <div class="answer-box">
+          <div class="answer-label">🎯 标准处置答案（得分关键词：HQLA/质押/应急/央行）</div>
+          <ul style="padding-left:18px;margin-top:8px;font-size:13px;line-height:1.8">
+            <li><strong>动用HQLA：</strong>将高质量流动资产（国债等）质押给银行间市场或央行，通过质押式回购（repo）融资补充当日到期资金缺口（当前HQLA=280亿，远超80亿缺口）</li>
+            <li><strong>启动流动性应急预案：</strong>激活银行流动性应急管理预案，向全行各部门传达流动性管控指令，暂停非必要资金占用</li>
+            <li><strong>向央行申请紧急流动性援助：</strong>通过常备借贷便利（SLF）或紧急再贷款窗口获取央行流动性支持（央行作为"最终贷款人"的核心功能）</li>
+            <li><strong>主动澄清谣言：</strong>通过官方渠道发布声明，公布最新流动性指标（LCR=114.3%，NSFR=112.5%），防止谣言引发挤兑</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📋 监管指标合规判断（每题10分）</div>
+      <table>
+        <thead><tr><th>指标</th><th>当前值</th><th>监管最低要求</th><th>状态</th><th>答案</th></tr></thead>
+        <tbody>
+          <tr class="pass-row"><td>流动性覆盖率（LCR）</td><td>114.3%</td><td>≥100%</td><td>✅ 超标准</td><td><strong>pass（达标）</strong></td></tr>
+          <tr class="fail-row"><td>不良贷款率（NPL）</td><td>2.5%</td><td>监管警示线2%</td><td>⚠️ 偏高</td><td><strong>warning（需关注）</strong></td></tr>
+          <tr class="pass-row"><td>一级资本充足率（Tier1）</td><td>9.33%</td><td>≥6%（含缓冲8.5%）</td><td>✅ 达标</td><td><strong>pass（达标）</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="explain-box">
+      <div class="explain-title">📖 银行风险管理核心知识点</div>
+      <ul>
+        <li><strong>贷款五级分类：</strong>正常→关注→次级→可疑→损失；后三类为"不良贷款"，对应拨备率25%/50%/100%</li>
+        <li><strong>久期（Duration）：</strong>衡量债券价格对利率变化的敏感性；修正久期越大，利率风险越高；价格变动≈-修正久期×利率变动</li>
+        <li><strong>LCR vs NSFR：</strong>LCR关注短期流动性（30天），NSFR关注长期结构性流动性（1年期稳定性）</li>
+        <li><strong>最终贷款人：</strong>中央银行在金融系统发生流动性危机时提供紧急流动性援助的职能，防止由流动性危机演化为偿付性危机</li>
+        <li><strong>操作风险定义（巴塞尔III）：</strong>由不当或失败的内部程序、人员、系统或外部事件导致的损失风险；高管舞弊是最典型操作风险案例</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ 章节测验答案参考 ═══════ -->
+<div class="exp-section" id="quiz-ref" style="border:3px solid #1a3a6b">
+  <div class="exp-header" style="background:linear-gradient(90deg,#1a3a6b,#2e75b6)">
+    <div>
+      <span class="exp-badge">附录</span>
+      <h2>各章节测验答案参考</h2>
+      <p>10个章节的标准测验题目及答案</p>
+    </div>
+  </div>
+  <div class="exp-body">
+    <div class="row2">
+      <div>
+        <h4 style="color:#1a3a6b;margin-bottom:10px">第1章 金融监管概论</h4>
+        <table>
+          <thead><tr><th>#</th><th>题目（简）</th><th>答案</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>金融监管的核心经济学理由</td><td><strong>B</strong>（市场失灵）</td></tr>
+            <tr><td>2</td><td>不属于金融监管主要目标的是</td><td><strong>D</strong>（提高银行利润）</td></tr>
+            <tr><td>3</td><td>巴塞尔协议III引入了哪些新要求</td><td><strong>B</strong>（三维框架）</td></tr>
+            <tr><td>4</td><td>中国目前的金融监管体制格局</td><td><strong>C</strong>（一行一局一会）</td></tr>
+            <tr><td>5</td><td>单一监管模式的代表国家</td><td><strong>C</strong>（英国）</td></tr>
+          </tbody>
+        </table>
+
+        <h4 style="color:#1a3a6b;margin:16px 0 10px">第3章 银行监管</h4>
+        <table>
+          <thead><tr><th>#</th><th>题目（简）</th><th>答案</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>CET1最低充足率要求</td><td><strong>B</strong>（4.5%）</td></tr>
+            <tr><td>2</td><td>LCR监管要求</td><td><strong>C</strong>（≥100%）</td></tr>
+            <tr><td>3</td><td>存款保险最高偿付限额</td><td><strong>C</strong>（50万元）</td></tr>
+          </tbody>
+        </table>
+
+        <h4 style="color:#1a3a6b;margin:16px 0 10px">第4章 证券监管</h4>
+        <table>
+          <thead><tr><th>#</th><th>题目（简）</th><th>答案</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>内幕交易三要素不包括的是</td><td><strong>D</strong>（金额超100万）</td></tr>
+            <tr><td>2</td><td>重大事项披露时限</td><td><strong>B</strong>（2个交易日）</td></tr>
+            <tr><td>3</td><td>不构成内幕交易的行为</td><td><strong>C</strong>（普通投资者技术分析）</td></tr>
+          </tbody>
+        </table>
+
+        <h4 style="color:#1a3a6b;margin:16px 0 10px">第5章 保险监管</h4>
+        <table>
+          <thead><tr><th>#</th><th>题目（简）</th><th>答案</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>综合偿付能力充足率达标标准</td><td><strong>C</strong>（≥100%）</td></tr>
+            <tr><td>2</td><td>C-ROSS最低资本聚合公式</td><td><strong>B</strong>（平方根求和）</td></tr>
+            <tr><td>3</td><td>充足率低于75%时监管分类</td><td><strong>C</strong>（C类不足）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h4 style="color:#1a3a6b;margin-bottom:10px">第8章 金融科技监管</h4>
+        <table>
+          <thead><tr><th>#</th><th>题目（简）</th><th>答案</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>监管沙盒由哪个机构创立</td><td><strong>B</strong>（英国FCA）</td></tr>
+            <tr><td>2</td><td>不属于P2P监管要求的是</td><td><strong>C</strong>（平台提供担保）</td></tr>
+            <tr><td>3</td><td>包容审慎的核心含义</td><td><strong>C</strong>（有限测试+消费者保护）</td></tr>
+          </tbody>
+        </table>
+
+        <h4 style="color:#1a3a6b;margin:16px 0 10px">第10章 宏观审慎监管</h4>
+        <table>
+          <thead><tr><th>#</th><th>题目（简）</th><th>答案</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>CCyB的触发指标主要是</td><td><strong>B</strong>（信贷/GDP缺口）</td></tr>
+            <tr><td>2</td><td>ΔCoVaR衡量的是</td><td><strong>B</strong>（边际系统风险贡献）</td></tr>
+            <tr><td>3</td><td>G-SIB附加资本范围</td><td><strong>B</strong>（0.5%~3.5%）</td></tr>
+          </tbody>
+        </table>
+
+        <div class="alert alert-info" style="margin-top:16px">
+          <strong>📝 答题提示：</strong><br>
+          • 第2、6、7、9章尚无内置测验题，教师可在后台管理中添加<br>
+          • 各章节知识点摘要见每章的"本章核心知识点"展示框<br>
+          • 所有选择题均为单选，答案按A/B/C/D选项
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ 实验评分标准总览 ═══════ -->
+<div class="exp-section" style="border:2px solid #d4ac0d">
+  <div class="exp-header" style="background:linear-gradient(90deg,#d4ac0d,#1a3a6b)">
+    <div>
+      <h2>📊 六大实验评分标准总览</h2>
+      <p>快速参考各实验的得分点和评分逻辑</p>
+    </div>
+  </div>
+  <div class="exp-body">
+    <table>
+      <thead><tr><th>实验</th><th>满分</th><th>得分点</th><th>评分方式</th><th>通过分数线</th></tr></thead>
+      <tbody>
+        <tr><td>实验一：2008压力测试</td><td>主观100分</td><td>银行选择+计算过程+监管建议</td><td>人工评阅</td><td>≥60分</td></tr>
+        <tr><td>实验二：沙盒评审</td><td>主观100分</td><td>四项申请裁决各25分（批准/拒绝+理由）</td><td>人工评阅</td><td>≥60分</td></tr>
+        <tr><td>实验三：证券监管</td><td>100分</td><td>Part A 60分（人识别）+ Part B 40分（5题×8分）</td><td>自动评分</td><td>≥60分</td></tr>
+        <tr><td>实验四：保险偿付</td><td>100分</td><td>综合充足率40分+核心充足率40分+诊断意见20分</td><td>自动+人工</td><td>≥60分</td></tr>
+        <tr><td>实验五：量化监管</td><td>100分</td><td>Q1(25)+Q2(20)+Q3(25)+Q4(30)</td><td>自动评分</td><td>≥60分</td></tr>
+        <tr><td>实验六：银行风控</td><td>110分</td><td>4事件×20分+3指标×10分</td><td>自动+关键词</td><td>≥66分</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- /.container -->
+
+<div style="text-align:center;padding:24px;color:#888;font-size:12px;border-top:1px solid #e0e0e0;margin-top:20px;background:#fff">
+  📚 金融监管理论与实践 — 教学实验系统 | 所有数据均为模拟教学数据，仅用于教学目的 |
+  本文件可离线使用，建议使用Chrome/Edge浏览器打开以获得最佳显示效果
+</div>
+
+</body>
+</html>

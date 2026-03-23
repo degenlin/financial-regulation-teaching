@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}证券监管结果{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-9">
+
+<div class="card mb-4 text-center" style="background:linear-gradient(135deg,#1a3a6b,#c0392b);color:#fff">
+  <div class="card-body py-3">
+    <h4 class="fw-bold">证券监管实验结果</h4>
+    <div class="display-4 fw-bold my-2">{{ score }}<span class="fs-5 ms-1">分</span></div>
+    <div class="opacity-75">内幕交易识别 + 信披合规判断综合得分</div>
+  </div>
+</div>
+
+<!-- Part A 结果 -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#c0392b;color:#fff">
+    <i class="fas fa-user-secret me-2"></i>Part A：内幕交易识别结果
+  </div>
+  <div class="card-body">
+    {% for r in ic_results %}
+    <div class="{{ 'mb-4 border-top pt-3' if loop.index > 1 }}">
+      <div class="fw-bold mb-2">案例{{ loop.index }}：{{ r.case.company }}</div>
+      <div class="row g-2 mb-3">
+        {% for s in r.case.suspects %}
+        {% set sid = loop.index %}
+        {% set selected = sid in r.selected %}
+        {% set is_correct = sid in r.correct %}
+        <div class="col-md-6">
+          <div class="p-2 rounded small
+            {% if is_correct and selected %}bg-success bg-opacity-10 border border-success
+            {% elif not is_correct and not selected %}bg-light
+            {% elif is_correct and not selected %}bg-warning bg-opacity-25 border border-warning
+            {% else %}bg-danger bg-opacity-10 border border-danger{% endif %}">
+            <div class="d-flex justify-content-between align-items-start">
+              <span class="fw-semibold">{{ s.name }}</span>
+              <span>
+                {% if is_correct and selected %}<span class="badge bg-success">✓ 正确识别</span>
+                {% elif not is_correct and not selected %}<span class="badge bg-secondary">✓ 正确排除</span>
+                {% elif is_correct and not selected %}<span class="badge bg-warning text-dark">漏判（应选）</span>
+                {% else %}<span class="badge bg-danger">误判（不应选）</span>{% endif %}
+              </span>
+            </div>
+            <div class="text-muted mt-1">{{ s.relation }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <!-- 知识点解析 -->
+      <div class="p-3 rounded" style="background:#f0f7ff;border-left:3px solid #2e75b6">
+        <div class="fw-semibold small text-primary mb-1">内幕交易认定要点</div>
+        {% for pt in r.case.key_points %}
+        <div class="small text-muted">• {{ pt }}</div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Part B 结果 -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+    <i class="fas fa-file-alt me-2"></i>Part B：信息披露合规判断结果
+  </div>
+  <div class="card-body">
+    {% for dr in disc_results %}
+    <div class="card mb-3 {{ 'border-success' if dr.correct else 'border-danger' }}">
+      <div class="card-body py-2">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="badge bg-secondary">{{ dr.item.category }}</span>
+          <span class="badge {{ 'bg-success' if dr.correct else 'bg-danger' }}">
+            {% if dr.correct %}+8分{% else %}0分{% endif %}
+          </span>
+        </div>
+        <div class="small mb-2">{{ dr.item.scenario }}</div>
+        <div class="d-flex gap-3 small">
+          <div>你的判断：
+            <strong class="{{ 'text-danger' if dr.answer=='yes' else 'text-success' }}">
+              {{ '违规' if dr.answer=='yes' else '不违规' }}
+            </strong>
+          </div>
+          {% if not dr.correct %}
+          <div>正确答案：
+            <strong class="{{ 'text-danger' if dr.item.violation else 'text-success' }}">
+              {{ '违规' if dr.item.violation else '不违规' }}
+            </strong>
+          </div>
+          {% endif %}
+        </div>
+        {% if dr.item.violation %}
+        <div class="mt-2 small p-2 rounded" style="background:#fef9e7">
+          <i class="fas fa-balance-scale me-1 text-warning"></i>
+          <strong>违规类型：</strong>{{ dr.item.violation_type }}<br>
+          <strong>适用规则：</strong>{{ dr.item.rule }}
+        </div>
+        {% else %}
+        <div class="mt-2 small text-success">
+          <i class="fas fa-check me-1"></i>符合规范：{{ dr.item.rule }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="d-flex gap-3">
+  <a href="/lab/securities" class="btn btn-outline-primary flex-fill">
+    <i class="fas fa-redo me-1"></i>重新作答
+  </a>
+  <a href="/student" class="btn btn-outline-secondary flex-fill">返回主页</a>
+</div>
+</div></div>
+</div>
+{% endblock %}

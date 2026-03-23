@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% block title %}实验5：量化监管指标{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-10">
+
+<div class="card mb-4" style="background:linear-gradient(135deg,#1a3a6b,#16a085);color:#fff">
+  <div class="card-body py-3">
+    <div class="d-flex align-items-center">
+      <div>
+        <span class="badge bg-warning text-dark mb-1">实验五 · 第6/10章</span>
+        <h4 class="fw-bold mb-0">量化监管：VaR / CoVaR / 逆周期资本缓冲（CCyB）</h4>
+        <p class="mb-0 opacity-75 small">运用系统性风险测量工具，分析银行风险敞口并给出宏观审慎监管建议</p>
+      </div>
+      <a href="/student" class="btn btn-outline-light btn-sm ms-auto">返回</a>
+    </div>
+  </div>
+</div>
+
+<!-- 工具说明 -->
+<div class="card mb-4 border-info">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+    <i class="fas fa-chart-line me-2"></i>量化监管核心工具
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="p-3 rounded" style="background:#e8f8f5;border-left:4px solid #16a085">
+          <div class="fw-bold text-success mb-2">VaR（风险价值）</div>
+          <div class="small">在99%置信水平下，特定持仓在一定持有期内的最大预期损失。<br>
+          <strong>局限</strong>：不捕捉尾部极端损失（Fat Tail）</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-3 rounded" style="background:#eaf0fb;border-left:4px solid #2e75b6">
+          <div class="fw-bold text-primary mb-2">CoVaR（条件风险价值）</div>
+          <div class="small">机构i处于危机时，整个金融系统的VaR。<br>
+          <strong>ΔCoVaR</strong> = 系统危机VaR − 正常状态VaR<br>
+          衡量单机构对系统的<strong>边际贡献</strong></div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-3 rounded" style="background:#fef9e7;border-left:4px solid #f39c12">
+          <div class="fw-bold" style="color:#e67e22" >CCyB（逆周期资本缓冲）</div>
+          <div class="small mt-1">根据信贷/GDP缺口动态调整资本要求。<br>
+          {% for k, v in ccyb_rule.items() %}
+          缺口{{ k }}%：缓冲率{{ v.ccyb }}%（{{ v.signal }}）<br>
+          {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form method="post" action="/lab/quant/submit">
+
+<!-- 银行风险数据 -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">系统性重要银行风险数据（2023Q4）</div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 small">
+      <thead class="table-light">
+        <tr>
+          <th>银行</th>
+          <th>总资产(万亿)</th>
+          <th>VaR<sub>99%</sub>(亿)</th>
+          <th>ΔCoVaR(亿)</th>
+          <th>Beta系数</th>
+          <th>杠杆倍数</th>
+          <th>波动率</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in banks %}
+        <tr>
+          <td class="fw-semibold">{{ b.name }}</td>
+          <td>{{ (b.assets/10000)|round(1) }}</td>
+          <td class="text-danger fw-bold">{{ b.var_99 }}</td>
+          <td class="text-danger fw-bold">{{ b.covar_contribution }}</td>
+          <td>{{ b.beta }}</td>
+          <td>{{ b.leverage }}x</td>
+          <td>{{ (b.vol*100)|round(1) }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 投资组合与宏观数据 -->
+<div class="row g-3 mb-4">
+  <div class="col-md-7">
+    <div class="card h-100">
+      <div class="card-header fw-bold bg-light">A银行（招商银行模拟）投资组合周收益率（%）</div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0 small">
+          <thead class="table-light">
+            <tr>
+              {% for item in portfolio %}
+              <th>{{ item.week }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {% for item in portfolio %}
+              <td class="{{ 'text-danger fw-bold' if item.return < -3 else ('text-danger' if item.return < 0 else 'text-success') }}">
+                {{ item.return }}
+              </td>
+              {% endfor %}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer small text-muted">
+        提示：最大单周损失即为最小（最负）的收益率值
+      </div>
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="card h-100">
+      <div class="card-header fw-bold bg-light">宏观审慎指标（当前值）</div>
+      <div class="card-body">
+        <table class="table table-sm mb-0 small">
+          <tr>
+            <td class="fw-semibold">信贷/GDP缺口</td>
+            <td class="text-danger fw-bold fs-5">{{ macro.credit_gdp_gap }}%</td>
+          </tr>
+          <tr>
+            <td class="fw-semibold">VIX波动率指数</td>
+            <td class="text-warning fw-bold">{{ macro.vix_equivalent }}</td>
+          </tr>
+          <tr>
+            <td class="fw-semibold">房价增速</td>
+            <td>{{ macro.house_price_growth }}%</td>
+          </tr>
+          <tr>
+            <td class="fw-semibold">全社会杠杆率</td>
+            <td class="text-danger">{{ macro.leverage_ratio_system }}%</td>
+          </tr>
+          <tr>
+            <td class="fw-semibold">同业利差</td>
+            <td>{{ macro.interbank_rate_spread }}%</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 作答区 -->
+<div class="card mb-4" style="border:2px solid #16a085">
+  <div class="card-header fw-bold" style="background:#16a085;color:#fff">
+    <i class="fas fa-pencil-alt me-2"></i>量化分析题（共4题）
+  </div>
+  <div class="card-body">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="p-3 rounded border">
+          <div class="fw-semibold mb-2 text-primary">Q1. 系统性风险贡献最大的银行</div>
+          <div class="small text-muted mb-2">根据ΔCoVaR指标，哪家银行对金融系统的边际风险贡献最大？</div>
+          <select name="q1_bank" class="form-select" required>
+            <option value="">-- 请选择 --</option>
+            {% for b in banks %}
+            <option value="{{ b.name }}">{{ b.name }}</option>
+            {% endfor %}
+          </select>
+          <div class="mt-2">
+            <label class="form-label small fw-semibold">简要说明原因：</label>
+            <textarea name="q1_reason" class="form-control form-control-sm" rows="2"
+                      placeholder="请说明为何选择该银行，ΔCoVaR数值是多少？"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-3 rounded border">
+          <div class="fw-semibold mb-2 text-danger">Q2. VaR最高的银行</div>
+          <div class="small text-muted mb-2">基于99% VaR，哪家银行自身面临的市场风险损失最大？</div>
+          <select name="q2_bank" class="form-select" required>
+            <option value="">-- 请选择 --</option>
+            {% for b in banks %}
+            <option value="{{ b.name }}">{{ b.name }}</option>
+            {% endfor %}
+          </select>
+          <div class="mt-2">
+            <label class="form-label small fw-semibold">VaR值（亿元）：</label>
+            <input type="number" name="q2_var_value" class="form-control form-control-sm"
+                   placeholder="例：7.8" step="0.1">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-3 rounded border">
+          <div class="fw-semibold mb-2" style="color:#e67e22">Q3. CCyB政策建议</div>
+          <div class="small text-muted mb-2">
+            当前信贷/GDP缺口 = <strong class="text-danger">{{ macro.credit_gdp_gap }}%</strong>，应设定多少逆周期资本缓冲率？
+          </div>
+          <div class="d-flex gap-3 mb-2 flex-wrap">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q3_ccyb" value="0" id="ccyb0" required>
+              <label class="form-check-label" for="ccyb0">0%</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q3_ccyb" value="0.5" id="ccyb05">
+              <label class="form-check-label" for="ccyb05">0.5%</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q3_ccyb" value="1.5" id="ccyb15">
+              <label class="form-check-label" for="ccyb15">1.5%</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q3_ccyb" value="2.5" id="ccyb25">
+              <label class="form-check-label" for="ccyb25">2.5%</label>
+            </div>
+          </div>
+          <textarea name="q3_policy" class="form-control form-control-sm" rows="2"
+                    placeholder="说明政策依据：信贷/GDP缺口处于哪个区间？应激活CCyB吗？"></textarea>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-3 rounded border">
+          <div class="fw-semibold mb-2 text-success">Q4. 最大单周损失</div>
+          <div class="small text-muted mb-2">
+            根据上表收益率数据，找出投资组合最大单周亏损（填负数，如：-12.5）
+          </div>
+          <div class="input-group mb-2">
+            <input type="number" name="q4_mdd" class="form-control"
+                   placeholder="最大单周亏损，如：-12.5" step="0.1">
+            <span class="input-group-text">%</span>
+          </div>
+          <div class="form-text">提示：找出12个收益率中最小（最负）的值</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-grid">
+  <button type="submit" class="btn btn-lg fw-bold text-white" style="background:#16a085">
+    <i class="fas fa-chart-bar me-2"></i>提交量化分析
+  </button>
+</div>
+</form>
+</div></div>
+</div>
+{% endblock %}

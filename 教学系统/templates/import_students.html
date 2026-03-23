@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}批量导入学生{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+      <div class="d-flex align-items-center mb-3">
+        <a href="/teacher/students" class="btn btn-outline-secondary btn-sm me-3">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <h5 class="fw-bold mb-0" style="color:#1a3a6b">
+          <i class="fas fa-file-import me-2"></i>批量导入学生账号
+        </h5>
+      </div>
+
+      <!-- Template download -->
+      <div class="card mb-4" style="border-left:4px solid #2e75b6">
+        <div class="card-body">
+          <h6 class="fw-bold">CSV文件格式说明</h6>
+          <p class="small text-muted mb-2">请按以下格式准备CSV文件（UTF-8编码），第一行为表头：</p>
+          <div class="p-3 rounded" style="background:#f4f6fa;font-family:monospace;font-size:.85rem">
+            username,password,name,student_id,class_id<br>
+            zhangsan,abc123,张三,2021001,金融2101<br>
+            lisi,def456,李四,2021002,金融2101<br>
+            wangwu,,王五,2021003,金融2102
+          </div>
+          <ul class="small text-muted mt-2 mb-0">
+            <li><strong>username</strong>（用户名）和 <strong>name</strong>（姓名）为必填项</li>
+            <li><strong>password</strong> 留空则默认为 <code>student123</code></li>
+            <li><strong>student_id</strong>（学号）、<strong>class_id</strong>（班级）选填</li>
+            <li>重复的用户名将跳过（不覆盖）</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Upload form -->
+      <div class="card">
+        <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+          <i class="fas fa-upload me-2"></i>上传CSV文件
+        </div>
+        <div class="card-body">
+          <form method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label class="form-label fw-semibold">选择CSV文件</label>
+              <input type="file" name="csvfile" class="form-control" accept=".csv" required>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn fw-bold text-white" style="background:#1a3a6b">
+                <i class="fas fa-file-import me-2"></i>开始导入
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Sample download button -->
+      <div class="text-center mt-3">
+        <button class="btn btn-outline-secondary btn-sm" onclick="downloadSample()">
+          <i class="fas fa-download me-1"></i>下载模板文件
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function downloadSample() {
+  const content = "username,password,name,student_id,class_id\nzhangsan,abc123,张三,2021001,金融2101\nlisi,,李四,2021002,金融2101\n";
+  const blob = new Blob(["\uFEFF" + content], {type:"text/csv;charset=utf-8"});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = "学生导入模板.csv";
+  a.click();
+}
+</script>
+{% endblock %}

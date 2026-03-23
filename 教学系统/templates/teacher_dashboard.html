@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}教师控制台{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-2 sidebar py-3">
+      <div class="text-center mb-3">
+        <div class="rounded-circle d-inline-flex align-items-center justify-content-center text-white fw-bold"
+             style="width:50px;height:50px;background:#c0392b;font-size:1.2rem">T</div>
+        <div class="fw-bold mt-1 small" style="color:#1a3a6b">{{ user.name }}</div>
+        <div class="badge bg-danger text-white small">教师</div>
+      </div>
+      <hr>
+      <a href="/teacher" class="nav-link active mb-1"><i class="fas fa-tachometer-alt me-2"></i>控制台</a>
+      <a href="/teacher/students" class="nav-link mb-1"><i class="fas fa-users me-2"></i>学生管理</a>
+      <a href="/teacher/import_students" class="nav-link mb-1"><i class="fas fa-file-import me-2"></i>批量导入</a>
+      <a href="/teacher/add_quiz" class="nav-link mb-1"><i class="fas fa-plus-circle me-2"></i>添加题目</a>
+      <a href="/teacher/quiz_stats" class="nav-link mb-1"><i class="fas fa-chart-bar me-2"></i>测验统计</a>
+      <a href="/teacher/exp_submissions" class="nav-link mb-1"><i class="fas fa-flask me-2"></i>实验批改</a>
+      <a href="/teacher/export_scores" class="nav-link mb-1"><i class="fas fa-download me-2"></i>导出成绩</a>
+      <a href="/logout" class="nav-link mt-4 text-danger"><i class="fas fa-sign-out-alt me-2"></i>退出</a>
+    </nav>
+
+    <!-- Main -->
+    <main class="col-md-10 p-4">
+      <div class="card mb-4" style="background:linear-gradient(90deg,#c0392b,#e74c3c);color:#fff">
+        <div class="card-body">
+          <h4 class="fw-bold mb-0"><i class="fas fa-chalkboard-teacher me-2"></i>教师控制台</h4>
+          <p class="mb-0 opacity-75">金融监管理论与实践 — 教学管理平台</p>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <div class="card stat-card p-3">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-users fa-2x me-3" style="color:#2e75b6"></i>
+              <div>
+                <div class="text-muted small">在籍学生</div>
+                <div class="fs-3 fw-bold">{{ student_count }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card stat-card green p-3">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-clipboard-check fa-2x me-3" style="color:#1e8b4c"></i>
+              <div>
+                <div class="text-muted small">测验提交</div>
+                <div class="fs-3 fw-bold">{{ quiz_count }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card stat-card gold p-3">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-flask fa-2x me-3" style="color:#d4ac0d"></i>
+              <div>
+                <div class="text-muted small">实验提交</div>
+                <div class="fs-3 fw-bold">{{ exp_count }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card stat-card red p-3">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-book fa-2x me-3" style="color:#c0392b"></i>
+              <div>
+                <div class="text-muted small">课程章节</div>
+                <div class="fs-3 fw-bold">10</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapter scores chart -->
+      <div class="card mb-4">
+        <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+          <i class="fas fa-chart-line me-2"></i>各章节平均测验成绩
+        </div>
+        <div class="card-body">
+          <canvas id="chapterChart" height="80"></canvas>
+        </div>
+      </div>
+
+      <!-- Chapter table -->
+      <div class="card">
+        <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+          <i class="fas fa-list me-2"></i>章节概况
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead class="table-light"><tr>
+              <th>章节</th><th>标题</th><th>测验次数</th><th>平均分</th><th>操作</th>
+            </tr></thead>
+            <tbody>
+            {% for ch in chapters %}
+            <tr>
+              <td><span class="badge" style="background:#2e75b6">第{{ ch.num }}章</span></td>
+              <td class="fw-semibold">{{ ch.title }}</td>
+              <td>{{ scores[ch.id].cnt if ch.id in scores else 0 }}</td>
+              <td>
+                {% if ch.id in scores and scores[ch.id].avg_score %}
+                <div class="d-flex align-items-center gap-2">
+                  <div class="progress flex-grow-1">
+                    <div class="progress-bar" style="width:{{ scores[ch.id].avg_score }}%;background:#1e8b4c"></div>
+                  </div>
+                  <span class="small fw-bold">{{ scores[ch.id].avg_score|round(1) }}%</span>
+                </div>
+                {% else %}
+                <span class="text-muted small">暂无数据</span>
+                {% endif %}
+              </td>
+              <td>
+                <a href="/teacher/quiz_stats?cid={{ ch.id }}" class="btn btn-sm btn-outline-primary">查看</a>
+              </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const labels = [{% for ch in chapters %}"第{{ ch.num }}章",{% endfor %}];
+const data   = [{% for ch in chapters %}{{ scores[ch.id].avg_score|round(1) if ch.id in scores and scores[ch.id].avg_score else 0 }},{% endfor %}];
+new Chart(document.getElementById('chapterChart'), {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [{
+      label: '平均正确率(%)',
+      data,
+      backgroundColor: 'rgba(46,117,182,0.7)',
+      borderColor: '#1a3a6b',
+      borderWidth: 1,
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { min: 0, max: 100, ticks: { callback: v => v + '%' } }
+    }
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Virtual env
+venv/
+env/
+.env/
+
+# Database (local only, recreated on server)
+教学系统/fsreg.db
+
+# Logs
+*.log
+教学系统/flask.log
+
+# Uploads
+教学系统/uploads/*
+!教学系统/uploads/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db

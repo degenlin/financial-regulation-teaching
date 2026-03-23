@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+{% block title %}实验6：银行风险控制{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-10">
+
+<div class="card mb-4" style="background:linear-gradient(135deg,#1a3a6b,#c0392b);color:#fff">
+  <div class="card-body py-3">
+    <div class="d-flex align-items-center">
+      <div>
+        <span class="badge bg-warning text-dark mb-1">实验六 · 第3章</span>
+        <h4 class="fw-bold mb-0">银行风险控制：信用 / 市场 / 操作 / 流动性风险</h4>
+        <p class="mb-0 opacity-75 small">模拟银行风控官职责，识别风险事件并提出处置建议</p>
+      </div>
+      <a href="/student" class="btn btn-outline-light btn-sm ms-auto">返回</a>
+    </div>
+  </div>
+</div>
+
+<!-- 银行基本情况 -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+    {{ s.bank_name }}基本情况（2023年末）
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-3 text-center">
+        <div class="p-3 rounded" style="background:#e8f4fd">
+          <div class="small text-muted">总资产</div>
+          <div class="display-6 fw-bold text-primary">{{ s.total_assets }}</div>
+          <div class="small text-muted">亿元</div>
+        </div>
+      </div>
+      <div class="col-md-3 text-center">
+        <div class="p-3 rounded {{ 'bg-success bg-opacity-10' if metrics.tier1_ratio >= 8.5 else 'bg-warning bg-opacity-10' }}">
+          <div class="small text-muted">核心一级资本充足率</div>
+          <div class="display-6 fw-bold {{ 'text-success' if metrics.tier1_ratio >= 8.5 else 'text-warning' }}">
+            {{ metrics.tier1_ratio }}%
+          </div>
+          <div class="small {{ 'text-success' if metrics.tier1_ratio >= 8.5 else 'text-warning' }}">
+            {{ '达标（≥8.5%）' if metrics.tier1_ratio >= 8.5 else '接近警戒' }}
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 text-center">
+        <div class="p-3 rounded {{ 'bg-success bg-opacity-10' if metrics.lcr >= 100 else 'bg-danger bg-opacity-10' }}">
+          <div class="small text-muted">流动性覆盖率（LCR）</div>
+          <div class="display-6 fw-bold {{ 'text-success' if metrics.lcr >= 100 else 'text-danger' }}">
+            {{ metrics.lcr }}%
+          </div>
+          <div class="small {{ 'text-success' if metrics.lcr >= 100 else 'text-danger' }}">
+            {{ '达标（≥100%）' if metrics.lcr >= 100 else '不达标' }}
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 text-center">
+        <div class="p-3 rounded {{ 'bg-danger bg-opacity-10' if metrics.npl_ratio > 2 else 'bg-success bg-opacity-10' }}">
+          <div class="small text-muted">不良贷款率</div>
+          <div class="display-6 fw-bold {{ 'text-danger' if metrics.npl_ratio > 2 else 'text-success' }}">
+            {{ metrics.npl_ratio }}%
+          </div>
+          <div class="small {{ 'text-danger' if metrics.npl_ratio > 2 else 'text-success' }}">
+            {{ '偏高（警戒2%）' if metrics.npl_ratio > 2 else '正常范围' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 贷款质量与市场头寸 -->
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header fw-bold bg-light">贷款五级分类（亿元）</div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0 small">
+          <thead class="table-light">
+            <tr><th>分类</th><th>金额(亿)</th><th>拨备比例</th><th>拨备额(亿)</th></tr>
+          </thead>
+          <tbody>
+            {% for name, cat in s.loan_classification.items() %}
+            <tr class="{{ 'table-danger' if name in ['次级','可疑','损失'] else '' }}">
+              <td class="fw-semibold">{{ name }}</td>
+              <td>{{ cat.amount }}</td>
+              <td>{{ (cat.provision_rate*100)|round(0)|int }}%</td>
+              <td class="{{ 'text-danger' if name in ['次级','可疑','损失'] else '' }}">
+                {{ (cat.amount * cat.provision_rate)|round(2) }}
+              </td>
+            </tr>
+            {% endfor %}
+            <tr class="table-dark fw-bold">
+              <td>不良合计</td>
+              <td colspan="2">次级+可疑+损失</td>
+              <td>NPL率：{{ metrics.npl_ratio }}%</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="p-2 small" style="background:#f4f6fa">
+          拨备总额：<strong>{{ metrics.provision }}亿</strong> |
+          拨备覆盖率：<strong class="{{ 'text-success' if (metrics.provision / (s.loan_classification['次级'].amount + s.loan_classification['可疑'].amount + s.loan_classification['损失'].amount)) * 100 >= 150 else 'text-warning' }}">
+            {{ ((metrics.provision / (s.loan_classification['次级'].amount + s.loan_classification['可疑'].amount + s.loan_classification['损失'].amount)) * 100)|round(0)|int }}%
+          </strong>（监管要求≥150%）
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header fw-bold bg-light">市场头寸与流动性数据</div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0 small">
+          <thead class="table-light">
+            <tr><th>持仓/项目</th><th>金额(亿)</th><th>风险敞口说明</th></tr>
+          </thead>
+          <tbody>
+            {% for name, pos in s.market_positions.items() %}
+            <tr>
+              <td class="fw-semibold">{{ name }}</td>
+              <td class="text-warning fw-bold">{{ pos.amount }}</td>
+              <td class="small text-muted">
+                {% if pos.duration is defined %}久期{{ pos.duration }}年{% endif %}
+                {% if pos.beta is defined %}Beta={{ pos.beta }}{% endif %}
+                {% if pos.exchange_move is defined %}汇率敞口{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div class="p-2 small" style="background:#f4f6fa">
+          <div>高质量流动资产（HQLA）：<strong>{{ s.liquidity.hqla }}亿</strong></div>
+          <div>30日净流出：<strong>{{ s.liquidity['30d_outflow'] }}亿</strong></div>
+          <div>LCR = {{ s.liquidity.hqla }}/{{ s.liquidity['30d_outflow'] }} = <strong class="{{ 'text-success' if metrics.lcr >= 100 else 'text-danger' }}">{{ metrics.lcr }}%</strong></div>
+          <div>NSFR：<strong class="{{ 'text-success' if metrics.nsfr >= 100 else 'text-danger' }}">{{ metrics.nsfr }}%</strong>（可用稳定资金/所需稳定资金）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form method="post" action="/lab/bankrisk/submit">
+
+<!-- 风险事件处置 -->
+<div class="card mb-4" style="border:2px solid #c0392b">
+  <div class="card-header fw-bold" style="background:#c0392b;color:#fff">
+    <i class="fas fa-exclamation-triangle me-2"></i>风险事件处置（模拟风控官决策，共4题 × 20分）
+  </div>
+  <div class="card-body">
+    {% set colors = {'信用风险': '#e74c3c', '市场风险': '#e67e22', '操作风险': '#9b59b6', '流动性风险': '#3498db'} %}
+    {% for event in s.risk_events %}
+    {% set color = colors.get(event.type, '#1a3a6b') %}
+    <div class="card mb-3" style="border-left:4px solid {{ color }}">
+      <div class="card-body py-3">
+        <div class="d-flex align-items-start mb-2">
+          <span class="badge me-2 mt-1" style="background:{{ color }}">{{ event.type }}</span>
+          <div>
+            <div class="fw-bold">事件{{ loop.index }}：{{ event.desc }}</div>
+            {% if event.bond_amount is defined %}
+            <div class="small mt-1 p-2 rounded" style="background:#f8f9fa">
+              债券金额：{{ event.bond_amount }}亿 | 久期：{{ event.duration }}年 | 利率上升：{{ event.rate_shift }}%
+            </div>
+            {% endif %}
+            {% if event.exposure is defined and event.bond_amount is not defined %}
+            <div class="small mt-1 text-muted">风险敞口：{{ event.exposure }}亿元</div>
+            {% endif %}
+          </div>
+        </div>
+        <label class="form-label small fw-semibold">你的处置建议：</label>
+        <textarea name="event_{{ event.id }}" class="form-control form-control-sm" rows="3"
+                  placeholder="请说明：1.风险评估 2.立即处置措施 3.后续管控建议" required></textarea>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- 指标判断 -->
+<div class="card mb-4" style="border:2px solid #1a3a6b">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+    <i class="fas fa-clipboard-check me-2"></i>监管指标合规判断（每题5分，共15分）
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="p-3 rounded border">
+          <div class="fw-semibold mb-2">LCR状态判断</div>
+          <div class="small text-muted mb-2">当前LCR = <strong>{{ metrics.lcr }}%</strong>，监管要求≥100%</div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="q_lcr" value="pass" id="lcr_pass">
+            <label class="form-check-label text-success" for="lcr_pass">达标，无需干预</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="q_lcr" value="warning" id="lcr_warn">
+            <label class="form-check-label text-warning" for="lcr_warn">达标但偏低，需关注</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="q_lcr" value="fail" id="lcr_fail">
+            <label class="form-check-label text-danger" for="lcr_fail">不达标，需立即整改</label>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-3 rounded border">
+          <div class="fw-semibold mb-2">不良贷款率预警</div>
+          <div class="small text-muted mb-2">NPL率 = <strong>{{ metrics.npl_ratio }}%</strong>，警戒线2%</div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="q_npl" value="normal" id="npl_ok">
+            <label class="form-check-label text-success" for="npl_ok">正常范围</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="q_npl" value="warning" id="npl_warn">
+            <label class="form-check-label text-warning" for="npl_warn">警告，需加强信贷管理</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="q_npl" value="critical" id="npl_crit">
+            <label class="form-check-label text-danger" for="npl_crit">严重，资产质量恶化</label>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-3 rounded border">
+          <div class="fw-semibold mb-2">核心资本充足率评估</div>
+          <div class="small text-muted mb-2">Tier1 = <strong>{{ metrics.tier1_ratio }}%</strong>，缓冲要求8.5%</div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="q_tier1" value="pass" id="t1_pass">
+            <label class="form-check-label text-success" for="t1_pass">充足，高于缓冲要求</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="q_tier1" value="adequate" id="t1_ok">
+            <label class="form-check-label text-warning" for="t1_ok">达标但空间有限</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="q_tier1" value="insufficient" id="t1_fail">
+            <label class="form-check-label text-danger" for="t1_fail">不足，需补充资本</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-grid">
+  <button type="submit" class="btn btn-lg fw-bold text-white" style="background:#c0392b">
+    <i class="fas fa-shield-alt me-2"></i>提交风控方案
+  </button>
+</div>
+</form>
+</div></div>
+</div>
+{% endblock %}

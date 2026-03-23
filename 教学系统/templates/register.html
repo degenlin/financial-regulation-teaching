@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}注册 - 金融监管教学实验系统{% endblock %}
+{% block content %}
+<div class="min-vh-100 d-flex align-items-center" style="background:linear-gradient(135deg,#1a3a6b 0%,#2e75b6 100%);">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="text-center mb-4">
+          <i class="fas fa-university fa-3x text-white mb-2"></i>
+          <h3 class="text-white fw-bold">学生注册</h3>
+        </div>
+        <div class="card shadow-lg p-4">
+          <h5 class="mb-3 fw-bold" style="color:#1a3a6b"><i class="fas fa-user-plus me-2"></i>创建学生账号</h5>
+          <form method="post">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">用户名 <span class="text-danger">*</span></label>
+                <input type="text" name="username" class="form-control" placeholder="登录用户名" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">密码 <span class="text-danger">*</span></label>
+                <input type="password" name="password" class="form-control" placeholder="至少6位" required minlength="6">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">真实姓名 <span class="text-danger">*</span></label>
+              <input type="text" name="name" class="form-control" placeholder="请输入真实姓名" required>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">学号</label>
+                <input type="text" name="student_id" class="form-control" placeholder="学号（选填）">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">班级</label>
+                <input type="text" name="class_id" class="form-control" placeholder="如：金融2101">
+              </div>
+            </div>
+            <div class="d-grid mt-2">
+              <button type="submit" class="btn btn-success btn-lg fw-bold">
+                <i class="fas fa-user-plus me-2"></i>注 册
+              </button>
+            </div>
+          </form>
+          <hr>
+          <div class="text-center">
+            <a href="/login" class="small">已有账号？返回登录</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

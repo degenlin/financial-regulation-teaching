@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% block title %}学生主页 - 金融监管教学实验系统{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-2 sidebar py-3">
+      <div class="text-center mb-3">
+        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center"
+             style="width:54px;height:54px;font-size:1.4rem;background:#1a3a6b!important">
+          {{ user.name[0] }}
+        </div>
+        <div class="fw-bold mt-1 small" style="color:#1a3a6b">{{ user.name }}</div>
+        <div class="text-muted" style="font-size:.75rem">{{ user.class_id or '学生' }}</div>
+      </div>
+      <hr>
+      <a href="/student" class="nav-link active mb-1"><i class="fas fa-home me-2"></i>学习主页</a>
+      <a href="#labs" class="nav-link mb-1"><i class="fas fa-flask me-2"></i>专项实验</a>
+      <a href="#chapters" class="nav-link mb-1"><i class="fas fa-book me-2"></i>课程章节</a>
+      <a href="/logout" class="nav-link mt-4 text-danger"><i class="fas fa-sign-out-alt me-2"></i>退出</a>
+    </nav>
+
+    <!-- Main -->
+    <main class="col-md-10 p-4">
+      <!-- Welcome -->
+      <div class="card mb-4" style="background:linear-gradient(90deg,#1a3a6b,#2e75b6);color:#fff;border-radius:14px;">
+        <div class="card-body d-flex align-items-center">
+          <div>
+            <h4 class="fw-bold mb-1">你好，{{ user.name }}！</h4>
+            <p class="mb-0 opacity-75">欢迎来到金融监管理论与实践学习平台</p>
+          </div>
+          <div class="ms-auto text-end">
+            <div class="opacity-75 small">已完成实验</div>
+            <div class="fs-2 fw-bold">{{ exp_done }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="row mb-4 g-3">
+        <div class="col-md-4">
+          <div class="card stat-card p-3">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-book-open fa-2x me-3" style="color:#2e75b6"></i>
+              <div>
+                <div class="text-muted small">总章节数</div>
+                <div class="fs-4 fw-bold">10</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card stat-card green p-3">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-check-circle fa-2x me-3" style="color:#1e8b4c"></i>
+              <div>
+                <div class="text-muted small">已完成测验</div>
+                <div class="fs-4 fw-bold">{{ results|length }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card stat-card gold p-3">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-flask fa-2x me-3" style="color:#d4ac0d"></i>
+              <div>
+                <div class="text-muted small">已提交实验</div>
+                <div class="fs-4 fw-bold">{{ exp_done }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent results -->
+      {% if results %}
+      <div class="card mb-4">
+        <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+          <i class="fas fa-history me-2"></i>最近测验记录
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead class="table-light"><tr>
+              <th>章节</th><th>得分</th><th>总题</th><th>正确率</th><th>时间</th>
+            </tr></thead>
+            <tbody>
+            {% for r in results %}
+            <tr>
+              <td>{{ r.ch_title }}</td>
+              <td class="fw-bold text-primary">{{ r.score }}</td>
+              <td>{{ r.total }}</td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="progress flex-grow-1" style="height:6px">
+                    <div class="progress-bar" style="width:{{ (r.score/r.total*100)|round(0) }}%;background:#1e8b4c"></div>
+                  </div>
+                  <span class="small">{{ (r.score/r.total*100)|round(1) }}%</span>
+                </div>
+              </td>
+              <td class="text-muted small">{{ r.taken_at }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Labs -->
+      <div class="card mb-4" id="labs">
+        <div class="card-header fw-bold" style="background:linear-gradient(90deg,#1a3a6b,#8e44ad);color:#fff">
+          <i class="fas fa-flask me-2"></i>专项实验模块（6个仿真实验）
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <a href="/lab/crisis" class="text-decoration-none">
+                <div class="card h-100" style="border-left:4px solid #c0392b;transition:.2s" onmouseover="this.style.boxShadow='0 2px 12px rgba(0,0,0,.15)'" onmouseout="this.style.boxShadow=''">
+                  <div class="card-body py-2">
+                    <div class="badge bg-danger mb-1">实验一 · 第3章</div>
+                    <div class="fw-bold text-dark small">2008金融危机压力测试</div>
+                    <div class="small text-muted">Basel III资本充足率 · 情景压测</div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a href="/lab/sandbox" class="text-decoration-none">
+                <div class="card h-100" style="border-left:4px solid #27ae60;transition:.2s" onmouseover="this.style.boxShadow='0 2px 12px rgba(0,0,0,.15)'" onmouseout="this.style.boxShadow=''">
+                  <div class="card-body py-2">
+                    <div class="badge bg-success mb-1">实验二 · 第8章</div>
+                    <div class="fw-bold text-dark small">监管沙盒评审模拟</div>
+                    <div class="small text-muted">FCA五准则 · 金融科技许可</div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a href="/lab/securities" class="text-decoration-none">
+                <div class="card h-100" style="border-left:4px solid #e74c3c;transition:.2s" onmouseover="this.style.boxShadow='0 2px 12px rgba(0,0,0,.15)'" onmouseout="this.style.boxShadow=''">
+                  <div class="card-body py-2">
+                    <div class="badge mb-1" style="background:#c0392b">实验三 · 第4章</div>
+                    <div class="fw-bold text-dark small">证券监管：内幕交易+信披</div>
+                    <div class="small text-muted">内幕交易识别 · 合规判断</div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a href="/lab/insurance" class="text-decoration-none">
+                <div class="card h-100" style="border-left:4px solid #8e44ad;transition:.2s" onmouseover="this.style.boxShadow='0 2px 12px rgba(0,0,0,.15)'" onmouseout="this.style.boxShadow=''">
+                  <div class="card-body py-2">
+                    <div class="badge mb-1" style="background:#8e44ad">实验四 · 第5章</div>
+                    <div class="fw-bold text-dark small">保险偿付能力计算（C-ROSS）</div>
+                    <div class="small text-muted">偿二代 · 最低资本计算</div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a href="/lab/quant" class="text-decoration-none">
+                <div class="card h-100" style="border-left:4px solid #16a085;transition:.2s" onmouseover="this.style.boxShadow='0 2px 12px rgba(0,0,0,.15)'" onmouseout="this.style.boxShadow=''">
+                  <div class="card-body py-2">
+                    <div class="badge mb-1" style="background:#16a085">实验五 · 第10章</div>
+                    <div class="fw-bold text-dark small">量化监管：VaR/CoVaR/CCyB</div>
+                    <div class="small text-muted">系统性风险 · 逆周期资本缓冲</div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a href="/lab/bankrisk" class="text-decoration-none">
+                <div class="card h-100" style="border-left:4px solid #2980b9;transition:.2s" onmouseover="this.style.boxShadow='0 2px 12px rgba(0,0,0,.15)'" onmouseout="this.style.boxShadow=''">
+                  <div class="card-body py-2">
+                    <div class="badge mb-1" style="background:#2980b9">实验六 · 第3章</div>
+                    <div class="fw-bold text-dark small">银行风险控制综合实验</div>
+                    <div class="small text-muted">信用/市场/操作/流动性风险处置</div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters -->
+      <div id="chapters">
+        <h5 class="fw-bold mb-3" style="color:#1a3a6b"><i class="fas fa-list me-2"></i>课程章节</h5>
+        <div class="row g-3">
+        {% for ch in chapters %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100" style="border-top:3px solid #2e75b6">
+            <div class="card-body">
+              <div class="d-flex align-items-start mb-2">
+                <span class="badge me-2" style="background:#1a3a6b;font-size:.75rem">第{{ ch.num }}章</span>
+                <h6 class="card-title mb-0 fw-bold" style="color:#1a3a6b">{{ ch.title }}</h6>
+              </div>
+              <div class="d-flex gap-2 mt-3">
+                <a href="/student/chapter/{{ ch.id }}" class="btn btn-sm btn-outline-primary flex-fill">
+                  <i class="fas fa-book-open me-1"></i>学习
+                </a>
+                <a href="/student/quiz/{{ ch.id }}" class="btn btn-sm flex-fill text-white" style="background:#1e8b4c">
+                  <i class="fas fa-pencil-alt me-1"></i>测验
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}实验1：2008金融危机压力测试{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-10">
+
+<!-- 标题 -->
+<div class="card mb-4" style="background:linear-gradient(135deg,#1a1a2e,#c0392b);color:#fff">
+  <div class="card-body py-3">
+    <div class="d-flex align-items-center">
+      <div>
+        <span class="badge bg-warning text-dark mb-1">实验一 · 第3章</span>
+        <h4 class="fw-bold mb-0">2008金融危机银行压力测试模拟</h4>
+        <p class="mb-0 opacity-75 small">基于巴塞尔协议III三大支柱，模拟极端情景下银行资本充足率变化</p>
+      </div>
+      <a href="/student" class="btn btn-outline-light btn-sm ms-auto">返回</a>
+    </div>
+  </div>
+</div>
+
+<!-- 背景 -->
+<div class="card mb-4 border-warning">
+  <div class="card-header bg-warning fw-bold"><i class="fas fa-history me-2"></i>历史背景</div>
+  <div class="card-body small">
+    <div class="row g-3">
+      <div class="col-md-8">
+        <p class="mb-2"><strong>2008年金融危机时间线：</strong></p>
+        <div class="d-flex flex-column gap-1">
+          <div class="d-flex"><span class="badge bg-secondary me-2 flex-shrink-0">2007.08</span>美国次贷危机显现，BNP巴黎银行冻结基金</div>
+          <div class="d-flex"><span class="badge bg-warning text-dark me-2 flex-shrink-0">2008.03</span>贝尔斯登濒临破产，美联储紧急介入，摩根大通收购</div>
+          <div class="d-flex"><span class="badge bg-danger me-2 flex-shrink-0">2008.09</span>雷曼兄弟申请破产，全球金融市场崩溃，美联储救助AIG</div>
+          <div class="d-flex"><span class="badge bg-dark me-2 flex-shrink-0">2008.10</span>TARP问题资产救助计划，7000亿美元注资</div>
+          <div class="d-flex"><span class="badge bg-success me-2 flex-shrink-0">2010.07</span>多德-弗兰克法案通过，金融监管改革启动</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-3 rounded" style="background:#fff3cd">
+          <div class="fw-bold mb-2">危机核心教训</div>
+          <ul class="small mb-0">
+            <li>高杠杆放大系统性风险</li>
+            <li>CDO等复杂产品定价失真</li>
+            <li>监管套利破坏资本缓冲</li>
+            <li>流动性风险被严重低估</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 压力测试表单 -->
+<form method="post" action="/lab/crisis/run">
+  <!-- 情景选择 -->
+  <div class="card mb-4">
+    <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+      <i class="fas fa-sliders-h me-2"></i>第一步：选择压力情景
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        {% for key, sc in scenarios.items() %}
+        <div class="col-md-4">
+          <div class="form-check card p-3 border-{{ sc.color }}">
+            <input class="form-check-input" type="radio" name="scenario"
+                   value="{{ key }}" id="sc_{{ key }}"
+                   {{ 'checked' if key == 'S2_中度' }}>
+            <label class="form-check-label w-100" for="sc_{{ key }}">
+              <div class="fw-bold text-{{ sc.color }}">{{ sc.label }}</div>
+              <div class="small text-muted mt-1">{{ sc.description }}</div>
+              <div class="mt-2 small">
+                <span class="badge bg-light text-dark">GDP冲击：{{ sc.gdp_shock }}%</span>
+                <span class="badge bg-light text-dark ms-1">房价跌：{{ sc.house_price_fall }}%</span>
+              </div>
+            </label>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 银行数据 -->
+  <div class="card mb-4">
+    <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+      <i class="fas fa-university me-2"></i>第二步：分析各银行风险敞口数据
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle small">
+          <thead class="table-dark">
+            <tr>
+              <th>银行</th>
+              <th>总资产(亿)</th>
+              <th>一级资本(亿)</th>
+              <th>当前Tier1充足率</th>
+              <th>杠杆倍数</th>
+              <th>按揭敞口(亿)</th>
+              <th>CDO持仓(亿)</th>
+              <th>交易账簿(亿)</th>
+              <th>特征</th>
+              <th>你的建议</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for b in banks %}
+          <tr>
+            <td class="fw-semibold">{{ b.name }}</td>
+            <td>{{ b.assets }}</td>
+            <td>{{ b.tier1_capital }}</td>
+            <td>
+              <span class="badge {{ 'bg-success' if b.tier1_ratio > 10 else ('bg-warning text-dark' if b.tier1_ratio > 8 else 'bg-danger') }}">
+                {{ b.tier1_ratio }}%
+              </span>
+            </td>
+            <td>
+              <span class="fw-bold {{ 'text-danger' if b.leverage > 25 else ('text-warning' if b.leverage > 15 else 'text-success') }}">
+                {{ b.leverage }}x
+              </span>
+            </td>
+            <td>{{ b.mortgage_exposure }}</td>
+            <td class="{{ 'text-danger fw-bold' if b.cdos > 200 }}">{{ b.cdos }}</td>
+            <td>{{ b.trading_book }}</td>
+            <td class="small text-muted">{{ b.description }}</td>
+            <td>
+              <select name="action_{{ b.name[:4] }}" class="form-select form-select-sm" style="min-width:110px">
+                <option value="">请选择</option>
+                <option value="maintain">维持资本</option>
+                <option value="raise_capital">要求增资</option>
+                <option value="reduce_risk">压降风险资产</option>
+                <option value="restrict">限制业务扩张</option>
+                <option value="resolve">介入处置</option>
+              </select>
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 监管标准提示 -->
+  <div class="alert alert-info small mb-4">
+    <strong>巴塞尔III监管标准：</strong>
+    ���心一级资本(CET1) ≥ 4.5% &nbsp;|&nbsp;
+    一级资本(Tier1) ≥ <strong>{{ min_tier1 }}%</strong> &nbsp;|&nbsp;
+    总资本 ≥ 8% &nbsp;|&nbsp;
+    留存缓冲 2.5% &nbsp;|&nbsp;
+    G-SIFI附加资本 {{ sifi }}%
+  </div>
+
+  <div class="d-grid">
+    <button type="submit" class="btn btn-lg fw-bold text-white" style="background:#c0392b">
+      <i class="fas fa-play me-2"></i>运行压力测试
+    </button>
+  </div>
+</form>
+</div></div>
+</div>
+{% endblock %}

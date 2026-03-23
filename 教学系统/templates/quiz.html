@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}第{{ ch.num }}章测验{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card mb-3" style="background:#1a3a6b;color:#fff">
+        <div class="card-body d-flex align-items-center">
+          <div>
+            <span class="badge bg-warning text-dark me-2">第{{ ch.num }}章</span>
+            <span class="fw-bold fs-5">{{ ch.title }} — 章节测验</span>
+          </div>
+          <div class="ms-auto text-end">
+            <div class="small opacity-75">共 {{ questions|length }} 道题</div>
+          </div>
+        </div>
+      </div>
+
+      {% if not questions %}
+      <div class="alert alert-warning">本章暂无测验题目，请等待教师添加。</div>
+      {% else %}
+      <form method="post">
+        {% for q in questions %}
+        <div class="card mb-3" id="q{{ loop.index }}">
+          <div class="card-body">
+            <div class="d-flex mb-3">
+              <span class="badge me-2 mt-1 flex-shrink-0" style="background:#2e75b6">Q{{ loop.index }}</span>
+              <div class="fw-semibold">{{ q.question }}</div>
+            </div>
+            <div class="quiz-option">
+              {% if q.option_a %}
+              <div>
+                <input type="radio" name="q{{ q.id }}" id="q{{ q.id }}_a" value="A" class="d-none">
+                <label for="q{{ q.id }}_a"><span class="badge bg-light text-dark me-2">A</span>{{ q.option_a }}</label>
+              </div>
+              {% endif %}
+              {% if q.option_b %}
+              <div>
+                <input type="radio" name="q{{ q.id }}" id="q{{ q.id }}_b" value="B" class="d-none">
+                <label for="q{{ q.id }}_b"><span class="badge bg-light text-dark me-2">B</span>{{ q.option_b }}</label>
+              </div>
+              {% endif %}
+              {% if q.option_c %}
+              <div>
+                <input type="radio" name="q{{ q.id }}" id="q{{ q.id }}_c" value="C" class="d-none">
+                <label for="q{{ q.id }}_c"><span class="badge bg-light text-dark me-2">C</span>{{ q.option_c }}</label>
+              </div>
+              {% endif %}
+              {% if q.option_d %}
+              <div>
+                <input type="radio" name="q{{ q.id }}" id="q{{ q.id }}_d" value="D" class="d-none">
+                <label for="q{{ q.id }}_d"><span class="badge bg-light text-dark me-2">D</span>{{ q.option_d }}</label>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+        <div class="d-flex gap-3 mt-3">
+          <a href="/student/chapter/{{ ch.id }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>返回
+          </a>
+          <button type="submit" class="btn fw-bold text-white flex-fill" style="background:#1a3a6b">
+            <i class="fas fa-check me-2"></i>提交答案
+          </button>
+        </div>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

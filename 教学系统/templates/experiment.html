@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}{{ exp.title }}{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-9">
+      <div class="card mb-4" style="background:linear-gradient(90deg,#b7950b,#d4ac0d);color:#fff">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div>
+              <span class="badge bg-dark mb-2">第{{ ch.num }}章 · {{ ch.title }}</span>
+              <h4 class="fw-bold mb-0">
+                <i class="fas fa-flask me-2"></i>{{ exp.title }}
+              </h4>
+            </div>
+            <a href="/student/chapter/{{ ch.id }}" class="btn btn-outline-light btn-sm ms-auto">
+              <i class="fas fa-arrow-left me-1"></i>返回
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="card mb-4">
+        <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+          <i class="fas fa-info-circle me-2"></i>实验说明
+        </div>
+        <div class="card-body">
+          <p>{{ exp.description }}</p>
+          {% if exp.exp_type == 'calculator' %}
+          <div class="alert alert-info small mb-0">
+            <i class="fas fa-calculator me-1"></i>
+            <strong>实验类型：</strong>计算分析题 — 请根据给定数据，完成计算过程并得出结论。
+          </div>
+          {% elif exp.exp_type == 'judge' %}
+          <div class="alert alert-warning small mb-0">
+            <i class="fas fa-gavel me-1"></i>
+            <strong>实验类型：</strong>案例裁判题 — 请运用所学监管法规和理论进行分析判断。
+          </div>
+          {% elif exp.exp_type == 'design' %}
+          <div class="alert alert-success small mb-0">
+            <i class="fas fa-drafting-compass me-1"></i>
+            <strong>实验类型：</strong>政策设计题 — 请设计合理的政策方案并阐述理由。
+          </div>
+          {% else %}
+          <div class="alert alert-secondary small mb-0">
+            <i class="fas fa-tasks me-1"></i>
+            <strong>实验类型：</strong>综合分析题
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Scenarios (for calculator type) -->
+      {% if exp.exp_type == 'calculator' and config.scenarios %}
+      <div class="card mb-4">
+        <div class="card-header fw-bold text-warning" style="background:#222">
+          <i class="fas fa-chart-bar me-2"></i>压力测试情景参数
+        </div>
+        <div class="card-body p-0">
+          <table class="table mb-0">
+            <thead class="table-dark"><tr>
+              <th>情景</th>
+              <th>GDP增速</th>
+              <th>不良贷款率</th>
+              <th>市场利率变动</th>
+              <th>资本充足率（基准{{ config.capital_ratio }}%）</th>
+            </tr></thead>
+            <tbody>
+            {% for sc in config.scenarios %}
+            <tr>
+              <td><span class="badge
+                {% if sc == '基准' %}bg-success
+                {% elif sc == '温和压力' %}bg-warning text-dark
+                {% else %}bg-danger{% endif %}">{{ sc }}</span></td>
+              {% if sc == '基准' %}
+              <td>5.0%</td><td>1.5%</td><td>+0bp</td>
+              <td>{{ config.capital_ratio }}%（达标）</td>
+              {% elif sc == '温和压力' %}
+              <td>3.0%</td><td>3.0%</td><td>+100bp</td>
+              <td>请计算→</td>
+              {% else %}
+              <td>-1.0%</td><td>6.0%</td><td>+250bp</td>
+              <td>请计算→</td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Submission form -->
+      <div class="card mb-4">
+        <div class="card-header fw-bold" style="background:#1e8b4c;color:#fff">
+          <i class="fas fa-edit me-2"></i>提交实验报告
+        </div>
+        <div class="card-body">
+          <form method="post">
+            <div class="mb-3">
+              <label class="form-label fw-semibold">实验分析与结论</label>
+              <textarea name="result" class="form-control" rows="10"
+                placeholder="请写明您的分析过程、计算结果及政策建议...
+建议包含：
+1. 问题分析
+2. 方法/计算过程
+3. 结论
+4. 政策建议"></textarea>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn fw-bold text-white px-5" style="background:#1e8b4c">
+                <i class="fas fa-paper-plane me-2"></i>提交报告
+              </button>
+              <a href="/student/chapter/{{ ch.id }}" class="btn btn-outline-secondary">取消</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Previous submission -->
+      {% if prev %}
+      <div class="card border-primary">
+        <div class="card-header fw-bold bg-light">
+          <i class="fas fa-history me-2"></i>上次提交记录
+          <span class="float-end text-muted small">{{ prev.submitted_at }}</span>
+        </div>
+        <div class="card-body">
+          <pre class="small mb-2" style="white-space:pre-wrap">{{ prev.result }}</pre>
+          <div class="d-flex align-items-center gap-3">
+            <span class="badge bg-primary fs-6">得分：{{ prev.score }} 分</span>
+            {% if prev.feedback %}
+            <span class="text-muted small"><i class="fas fa-comment me-1"></i>{{ prev.feedback }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

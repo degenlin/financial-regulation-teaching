@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}沙盒评审结果{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-9">
+
+<div class="card mb-4 text-center" style="background:linear-gradient(135deg,#0d5c3a,#27ae60);color:#fff">
+  <div class="card-body py-3">
+    <h4 class="fw-bold">监管沙盒评审结果</h4>
+    <div class="display-4 fw-bold my-2">{{ score }} <span class="fs-4">/ 80 分</span></div>
+    {% set pct = (score/80*100)|round(0)|int %}
+    <div class="progress mx-auto mb-2" style="max-width:300px;height:10px">
+      <div class="progress-bar bg-warning" style="width:{{ pct }}%"></div>
+    </div>
+    <div class="opacity-75">正确 {{ feedback|selectattr('correct')|list|length }} / {{ feedback|length }} 个决定</div>
+  </div>
+</div>
+
+{% for fb in feedback %}
+{% set app = fb.app %}
+<div class="card mb-4 {{ 'border-success' if fb.correct else 'border-danger' }}">
+  <div class="card-header d-flex align-items-center {{ 'bg-success text-white' if fb.correct else 'bg-danger text-white' }}">
+    <span class="fw-bold">申请 #{{ app.id }}：{{ app.company }}</span>
+    <span class="ms-auto">
+      {% if fb.correct %}<i class="fas fa-check-circle me-1"></i>判断正确（+20分）
+      {% else %}<i class="fas fa-times-circle me-1"></i>判断错误（+0分）{% endif %}
+    </span>
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="small">
+          <div class="fw-semibold mb-1">你的决定</div>
+          <span class="badge {{ 'bg-success' if fb.decision=='approve' else 'bg-danger' }} fs-6">
+            {{ '批准' if fb.decision=='approve' else '拒绝' }}
+          </span>
+          {% if not fb.correct %}
+          <span class="ms-2 text-muted">→ 正确应为：
+            <strong class="{{ 'text-success' if ref[app.id|string]=='approve' else 'text-danger' }}">
+              {{ '批准' if ref[app.id|string]=='approve' else '拒绝' }}
+            </strong>
+          </span>
+          {% endif %}
+        </div>
+        {% if fb.reasoning %}
+        <div class="mt-2 small p-2 rounded" style="background:#f4f6fa">
+          <strong>你的理由：</strong>{{ fb.reasoning }}
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-md-6">
+        <div class="small fw-semibold mb-1">参考解析</div>
+        <div class="small p-2 rounded {{ 'bg-success bg-opacity-10' if fb.correct else 'bg-warning bg-opacity-10' }}">
+          {% if app.id == 1 %}
+          <strong>批准。</strong>AI信贷具有真实创新性和普惠价值，算法黑箱问题可在沙盒内通过XAI要求加以测试，消费者保护措施完整。但需附加条件：定期提交模型可解释性报告、利率上限合规证明。
+          {% elif app.id == 2 %}
+          <strong>批准。</strong>区块链参数保险创新性极高，数据来源客观公开，智能合约已审计，风险可控。测试规模小，风险隔离性好。需明确链上数据争议时的仲裁机制。
+          {% elif app.id == 3 %}
+          <strong>拒绝。</strong>私人稳定币涉及货币发行权边界，AML/CFT风险高，储备资产安全性未经验证，系统性风险隐患大。不符合"监管合规基础"标准，建议先完善合规框架再申请。
+          {% elif app.id == 4 %}
+          <strong>批准。</strong>智能投顾已有基金销售牌照基础，创新度适中，消费者保护完整。AI推荐责任认定问题可在沙盒内通过测试明确规范。建议附加条件：加强投资建议资质说明。
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<div class="d-flex gap-3 mt-2">
+  <a href="/lab/sandbox" class="btn btn-outline-success flex-fill">
+    <i class="fas fa-redo me-1"></i>重新评审
+  </a>
+  <a href="/student" class="btn btn-outline-secondary flex-fill">返回主页</a>
+</div>
+</div></div>
+</div>
+{% endblock %}

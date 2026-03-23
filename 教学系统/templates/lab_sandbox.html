@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}实验2：监管沙盒评审{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-10">
+
+<div class="card mb-4" style="background:linear-gradient(135deg,#0d5c3a,#27ae60);color:#fff">
+  <div class="card-body py-3">
+    <div class="d-flex align-items-center">
+      <div>
+        <span class="badge bg-warning text-dark mb-1">实验二 · 第8章</span>
+        <h4 class="fw-bold mb-0">监管沙盒申请评审模拟</h4>
+        <p class="mb-0 opacity-75 small">扮演监管机构审查员，对4个金融科技创新申请作出批准/拒绝决定并给出理由</p>
+      </div>
+      <a href="/student" class="btn btn-outline-light btn-sm ms-auto">返回</a>
+    </div>
+  </div>
+</div>
+
+<!-- 评审标准 -->
+<div class="card mb-4 border-success">
+  <div class="card-header fw-bold bg-success text-white">
+    <i class="fas fa-clipboard-list me-2"></i>FCA监管沙盒五大评审标准
+  </div>
+  <div class="card-body">
+    <div class="row g-2">
+      {% for key, desc in criteria.items() %}
+      <div class="col-md-6">
+        <div class="d-flex align-items-start p-2 rounded" style="background:#f4f6fa">
+          <span class="badge bg-success me-2 mt-1">{{ loop.index }}</span>
+          <div>
+            <div class="fw-semibold small">{{ key.replace('_',' ')|title }}</div>
+            <div class="small text-muted">{{ desc }}</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<form method="post" action="/lab/sandbox/submit">
+  {% for app in apps %}
+  <div class="card mb-4" style="border-top:4px solid {{ '#27ae60' if app.risk_level=='低' else ('#f39c12' if app.risk_level=='中等' else '#c0392b') }}">
+    <div class="card-header d-flex align-items-center" style="background:#f8f9fa">
+      <div>
+        <span class="badge me-2
+          {{ 'bg-success' if app.risk_level=='低' else ('bg-warning text-dark' if app.risk_level=='中等' else 'bg-danger') }}">
+          风险：{{ app.risk_level }}
+        </span>
+        <span class="fw-bold">申请 #{{ app.id }}：{{ app.company }}</span>
+      </div>
+      <span class="ms-auto badge bg-primary">创新度：{{ app.innovation_score }}/10</span>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-8">
+          <!-- 产品说明 -->
+          <div class="p-3 rounded mb-3" style="background:#f0f7ff;border-left:4px solid #2e75b6">
+            <div class="fw-semibold small text-primary mb-1">产品描述</div>
+            <div class="small">{{ app.product }}</div>
+          </div>
+          <div class="row g-2 small mb-3">
+            <div class="col-md-6">
+              <div class="fw-semibold text-muted">目标用户 & 测试规模</div>
+              <div>{{ app.target_users }}</div>
+            </div>
+            <div class="col-md-6">
+              <div class="fw-semibold text-muted">消费者保护措施</div>
+              <div>{{ app.customer_protection }}</div>
+            </div>
+            <div class="col-md-6">
+              <div class="fw-semibold text-muted">现有牌照</div>
+              <div>{{ app.existing_license }}</div>
+            </div>
+            <div class="col-md-6">
+              <div class="fw-semibold text-muted">数据来源</div>
+              <div>{{ app.data_source }}</div>
+            </div>
+          </div>
+          <!-- 监管关注点 -->
+          <div class="mb-3">
+            <div class="fw-semibold small text-danger mb-1"><i class="fas fa-exclamation-triangle me-1"></i>主要监管关注点</div>
+            {% for concern in app.regulatory_concern %}
+            <span class="badge bg-danger me-1 mb-1">{{ concern }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="col-md-4">
+          <!-- FCA评分雷达数据 -->
+          <div class="p-3 rounded" style="background:#f8f9fa">
+            <div class="fw-semibold small mb-2">五维度评分</div>
+            {% for key, score in app.fca_criteria.items() %}
+            <div class="mb-2">
+              <div class="d-flex justify-content-between small">
+                <span>{{ key.replace('_',' ')[:8] }}</span>
+                <span class="fw-bold">{{ score }}/10</span>
+              </div>
+              <div class="progress" style="height:6px">
+                <div class="progress-bar {{ 'bg-success' if score>=7 else ('bg-warning' if score>=5 else 'bg-danger') }}"
+                     style="width:{{ score*10 }}%"></div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- 学生决策 -->
+      <div class="mt-3 p-3 rounded" style="background:#fff9e6;border:2px solid #f39c12">
+        <div class="fw-bold mb-2"><i class="fas fa-gavel me-2 text-warning"></i>你的评审决定</div>
+        <div class="d-flex gap-4 mb-3">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="decision_{{ app.id }}"
+                   value="approve" id="ap{{ app.id }}_y" required>
+            <label class="form-check-label fw-semibold text-success" for="ap{{ app.id }}_y">
+              <i class="fas fa-check-circle me-1"></i>批准进入沙盒
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="decision_{{ app.id }}"
+                   value="reject" id="ap{{ app.id }}_n">
+            <label class="form-check-label fw-semibold text-danger" for="ap{{ app.id }}_n">
+              <i class="fas fa-times-circle me-1"></i>拒绝申请
+            </label>
+          </div>
+        </div>
+        <div>
+          <label class="form-label small fw-semibold">评审理由（说明批准/拒绝的主要依据）</label>
+          <textarea name="reason_{{ app.id }}" class="form-control form-control-sm" rows="2"
+                    placeholder="请结合五大标准说明理由..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <div class="d-grid mt-2">
+    <button type="submit" class="btn btn-lg fw-bold text-white" style="background:#27ae60">
+      <i class="fas fa-paper-plane me-2"></i>提交评审意见
+    </button>
+  </div>
+</form>
+</div></div>
+</div>
+{% endblock %}

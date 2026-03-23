@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}实验批改{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-2 sidebar py-3">
+      <a href="/teacher" class="nav-link mb-1"><i class="fas fa-arrow-left me-2"></i>返回控制台</a>
+      <hr>
+      <a href="/teacher/exp_submissions" class="nav-link active mb-1">
+        <i class="fas fa-flask me-2"></i>实验批改
+      </a>
+    </nav>
+    <main class="col-md-10 p-4">
+      <h5 class="fw-bold mb-4" style="color:#1a3a6b">
+        <i class="fas fa-flask me-2"></i>实验报告批改
+      </h5>
+      {% if subs %}
+      {% for s in subs %}
+      <div class="card mb-3">
+        <div class="card-header d-flex align-items-center
+          {% if s.feedback %}bg-success text-white{% else %}bg-light{% endif %}">
+          <div>
+            <span class="fw-bold">{{ s.uname }}</span>
+            <span class="text-muted small ms-2">{{ s.student_id }}</span>
+            <span class="badge bg-primary ms-2">{{ s.exp_title }}</span>
+          </div>
+          <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="badge bg-warning text-dark fs-6">{{ s.score }} 分</span>
+            <span class="small {% if s.feedback %}text-white-50{% else %}text-muted{% endif %}">
+              {{ s.submitted_at }}
+            </span>
+          </div>
+        </div>
+        <div class="card-body">
+          <pre class="small p-3 rounded mb-3"
+               style="background:#f4f6fa;white-space:pre-wrap;max-height:200px;overflow-y:auto">{{ s.result }}</pre>
+          {% if s.feedback %}
+          <div class="alert alert-success small mb-3">
+            <i class="fas fa-check-circle me-1"></i>
+            <strong>已批改：</strong>{{ s.feedback }}
+          </div>
+          {% endif %}
+          <form method="post" action="/teacher/grade_exp/{{ s.id }}" class="row g-2 align-items-end">
+            <div class="col-md-2">
+              <label class="form-label small fw-semibold">评分（0-100）</label>
+              <input type="number" name="score" class="form-control form-control-sm"
+                     value="{{ s.score }}" min="0" max="100">
+            </div>
+            <div class="col-md-7">
+              <label class="form-label small fw-semibold">批改意见</label>
+              <input type="text" name="feedback" class="form-control form-control-sm"
+                     value="{{ s.feedback }}" placeholder="输入评语...">
+            </div>
+            <div class="col-md-3">
+              <button type="submit" class="btn btn-sm fw-bold text-white w-100" style="background:#1a3a6b">
+                <i class="fas fa-save me-1"></i>保存评分
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <div class="alert alert-info">暂无实验提交记录。</div>
+      {% endif %}
+    </main>
+  </div>
+</div>
+{% endblock %}

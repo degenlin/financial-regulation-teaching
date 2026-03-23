@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}保险偿付能力结果{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-9">
+
+<div class="card mb-4" style="background:linear-gradient(135deg,#1a3a6b,#8e44ad);color:#fff">
+  <div class="card-body py-3">
+    <h4 class="fw-bold">保险偿付能力计算结果 — {{ company.name }}</h4>
+    <div class="display-4 fw-bold my-1">{{ score }}<span class="fs-5 ms-1">/ 100 分</span></div>
+  </div>
+</div>
+
+<!-- 正确结果 -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card text-center h-100 {{ 'border-success' if result.pass_comprehensive else 'border-danger' }}">
+      <div class="card-body">
+        <div class="small text-muted mb-1">综合偿付能力充足率</div>
+        <div class="display-5 fw-bold {{ 'text-success' if result.pass_comprehensive else 'text-danger' }}">
+          {{ result.comprehensive_ratio }}%
+        </div>
+        <div class="badge {{ 'bg-success' if result.pass_comprehensive else 'bg-danger' }} mt-1">
+          {{ '达标（≥100%）' if result.pass_comprehensive else '不达标' }}
+        </div>
+        {% if student_comp %}
+        <div class="mt-2 small">
+          你的答案：<strong class="{{ 'text-success' if comp_correct else 'text-danger' }}">{{ student_comp }}%</strong>
+          <span class="ms-1">{{ '✓' if comp_correct else '✗' }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center h-100 {{ 'border-success' if result.pass_core else 'border-warning' }}">
+      <div class="card-body">
+        <div class="small text-muted mb-1">核心偿付能力充足率</div>
+        <div class="display-5 fw-bold {{ 'text-success' if result.pass_core else 'text-warning' }}">
+          {{ result.core_ratio }}%
+        </div>
+        <div class="badge {{ 'bg-success' if result.pass_core else 'bg-warning text-dark' }} mt-1">
+          {{ '达标（≥50%）' if result.pass_core else '不达标' }}
+        </div>
+        {% if student_core %}
+        <div class="mt-2 small">
+          你的答案：<strong class="{{ 'text-success' if core_correct else 'text-danger' }}">{{ student_core }}%</strong>
+          <span class="ms-1">{{ '✓' if core_correct else '✗' }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center h-100" style="border-color:#8e44ad">
+      <div class="card-body">
+        <div class="small text-muted mb-1">最低资本需求</div>
+        <div class="display-5 fw-bold" style="color:#8e44ad">{{ result.min_capital }}亿</div>
+        <div class="badge mt-1" style="background:#8e44ad">
+          风险评级：{{ result.risk_rating }}类
+        </div>
+        <div class="small text-muted mt-2">状态：{{ result.status }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 详细拆分 -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+    最低资本计算过程
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 small">
+      <thead class="table-light">
+        <tr><th>风险模块</th><th>计算说明</th><th>最低资本（亿）</th><th>占比</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fw-semibold text-primary">保险风险</td>
+          <td>各险种准备金 × 风险因子之和</td>
+          <td class="fw-bold">{{ result.insurance_risk }}</td>
+          <td><div class="progress" style="height:6px;width:100px">
+            <div class="progress-bar bg-primary" style="width:{{ (result.insurance_risk/result.min_capital*100)|round(0)|int }}%"></div>
+          </div></td>
+        </tr>
+        <tr>
+          <td class="fw-semibold text-danger">市场风险</td>
+          <td>各类资产 × 市场风险因子之和</td>
+          <td class="fw-bold">{{ result.market_risk }}</td>
+          <td><div class="progress" style="height:6px;width:100px">
+            <div class="progress-bar bg-danger" style="width:{{ (result.market_risk/result.min_capital*100)|round(0)|int }}%"></div>
+          </div></td>
+        </tr>
+        <tr>
+          <td class="fw-semibold text-warning">信用风险</td>
+          <td>市场风险模块 × 50%</td>
+          <td class="fw-bold">{{ result.credit_risk }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="fw-semibold text-success">操作风险</td>
+          <td>保费收入估算 × {{ (company.operational_risk_factor*100)|int }}%</td>
+          <td class="fw-bold">{{ result.op_risk }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="fw-semibold" style="color:#8e44ad">利率风险</td>
+          <td>单独计提</td>
+          <td class="fw-bold">{{ result.ir_risk }}</td>
+          <td></td>
+        </tr>
+        <tr class="table-dark">
+          <td class="fw-bold">最低资本合计</td>
+          <td class="small">= √(保险²+市场²+信用²) + 操作 + 利率</td>
+          <td class="fw-bold fs-5">{{ result.min_capital }}</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 诊断意见 -->
+{% if diagnosis %}
+<div class="card mb-4">
+  <div class="card-header fw-bold bg-light">你的监管诊断意见</div>
+  <div class="card-body small">{{ diagnosis }}</div>
+</div>
+{% endif %}
+
+<!-- 参考诊断 -->
+<div class="card mb-4 border-primary">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+    <i class="fas fa-lightbulb me-2"></i>参考监管诊断意见
+  </div>
+  <div class="card-body small">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <strong>偿付能力状态：</strong>
+        {{ '综合和核心均达标，属于正常类（A类）' if result.pass_comprehensive and result.pass_core
+           else '存在偿付能力不足风险，需监管介入' }}<br><br>
+        <strong>主要风险来源：</strong>
+        {% if result.market_risk > result.insurance_risk %}
+          市场风险（{{ result.market_risk }}亿）是最大风险来源，主要源于股票持仓（风险因子32%）。
+        {% else %}
+          保险风险（{{ result.insurance_risk }}亿）是最大风险来源。
+        {% endif %}
+      </div>
+      <div class="col-md-6">
+        <strong>监管建议：</strong>
+        <ul class="mb-0 mt-1">
+          {% if result.comprehensive_ratio >= 150 %}
+          <li>偿付能力充裕，维持现状，可适度扩展业务</li>
+          {% elif result.comprehensive_ratio >= 100 %}
+          <li>偿付能力达标但有改善空间</li>
+          <li>关注股票等高风险资产占比，控制市场风险</li>
+          {% else %}
+          <li>偿付能力不足，限制新业务增长</li>
+          <li>要求制定资本补充计划，6个月内完成增资</li>
+          <li>压降高风险投资资产</li>
+          {% endif %}
+          {% if company.type == '人身险' %}
+          <li>万能险账户利率风险需重点关注，建议增加久期管理</li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex gap-3">
+  <a href="/lab/insurance" class="btn btn-outline-primary flex-fill">
+    <i class="fas fa-redo me-1"></i>重新计算
+  </a>
+  <a href="/student" class="btn btn-outline-secondary flex-fill">返回主页</a>
+</div>
+</div></div>
+</div>
+{% endblock %}

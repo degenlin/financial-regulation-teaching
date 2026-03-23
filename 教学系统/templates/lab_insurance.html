@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block title %}实验4：保险偿付能力计算{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-10">
+
+<div class="card mb-4" style="background:linear-gradient(135deg,#1a3a6b,#8e44ad);color:#fff">
+  <div class="card-body py-3">
+    <div class="d-flex align-items-center">
+      <div>
+        <span class="badge bg-warning text-dark mb-1">实验四 · 第5章</span>
+        <h4 class="fw-bold mb-0">保险偿付能力计算（C-ROSS偿二代）</h4>
+        <p class="mb-0 opacity-75 small">根据C-ROSS三支柱框架，计算保险公司最低资本需求与偿付能力充足率</p>
+      </div>
+      <a href="/student" class="btn btn-outline-light btn-sm ms-auto">返回</a>
+    </div>
+  </div>
+</div>
+
+<!-- 计算公式说明 -->
+<div class="card mb-4 border-primary">
+  <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+    <i class="fas fa-calculator me-2"></i>C-ROSS计算框架（支柱一：最低资本）
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="p-3 rounded" style="background:#e8f4fd;border-left:4px solid #2e75b6">
+          <div class="fw-bold text-primary mb-2">最低资本 = f(风险模块)</div>
+          <div class="small">
+            <div class="mb-1">① <strong>保险风险最低资本</strong> = Σ（责任准备金 × 风险因子）</div>
+            <div class="mb-1">② <strong>市场风险最低资本</strong> = Σ（资产 × 市场风险因子）</div>
+            <div class="mb-1">③ <strong>信用风险最低资本</strong> = 市场风险模块 × 50%</div>
+            <div class="mb-1">④ <strong>操作风险最低资本</strong> = 保费收入估算 × 系数</div>
+            <div class="mb-1">⑤ <strong>利率风险附加</strong> = 单独计提</div>
+            <div class="mt-2 fw-bold text-primary">最低资本 = √(①²+②²+③²) + ④ + ⑤</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-3 rounded" style="background:#f9f0ff;border-left:4px solid #8e44ad">
+          <div class="fw-bold text-primary mb-2">偿付能力充足率</div>
+          <div class="small">
+            <div class="mb-2"><strong>综合偿付能力充足率</strong> = 实际资本 / 最低资本 × 100%</div>
+            <div class="mb-2"><strong>核心偿付能力充足率</strong> = 核心资本 / 最低资本 × 100%</div>
+            <hr class="my-2">
+            <div class="mb-1"><span class="badge bg-success me-1">达标</span>综合 ≥ 100% 且 核心 ≥ 50%</div>
+            <div class="mb-1"><span class="badge bg-warning text-dark me-1">关注</span>综合 75%-100%</div>
+            <div><span class="badge bg-danger me-1">风险</span>综合 &lt; 75%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form method="post" action="/lab/insurance/calc">
+  <!-- 选择公司 -->
+  <div class="card mb-4">
+    <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">第一步：选择分析对象</div>
+    <div class="card-body">
+      <div class="row g-3">
+        {% for co in companies %}
+        {% set i = loop.index0 %}
+        <div class="col-md-6">
+          <div class="form-check card p-3">
+            <input class="form-check-input" type="radio" name="company_id"
+                   value="{{ i }}" id="co_{{ i }}" {{ 'checked' if i == 0 }}>
+            <label class="form-check-label" for="co_{{ i }}">
+              <div class="fw-bold">{{ co.name }}</div>
+              <div class="small text-muted">{{ co.type }} | 实际资本：{{ co.actual_capital }}亿元</div>
+              <div class="small text-muted">{{ co.description }}</div>
+            </label>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 数据展示（第一家公司） -->
+  {% set co = companies[0] %}
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header fw-bold bg-light">保险业务风险数据（{{ co.name }}）</div>
+        <div class="card-body p-0">
+          <table class="table table-sm mb-0 small">
+            <thead class="table-light"><tr>
+              <th>险种</th><th>责任准备金(亿)</th><th>风险因子</th><th>风险资本(亿)</th>
+            </tr></thead>
+            <tbody>
+            {% for name, p in co.products.items() %}
+            <tr>
+              <td>{{ name }}</td>
+              <td>{{ p.reserves }}</td>
+              <td>{{ (p.risk_factor*100)|round(1) }}%</td>
+              <td class="text-danger fw-semibold">{{ (p.reserves * p.risk_factor)|round(2) }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header fw-bold bg-light">投资资产市场风险数据</div>
+        <div class="card-body p-0">
+          <table class="table table-sm mb-0 small">
+            <thead class="table-light"><tr>
+              <th>资产类别</th><th>金额(亿)</th><th>风险因子</th><th>市场风险资本</th>
+            </tr></thead>
+            <tbody>
+            {% for name, a in co.investment_assets.items() %}
+            <tr>
+              <td>{{ name }}</td>
+              <td>{{ a.amount }}</td>
+              <td class="{{ 'text-danger' if a.risk_factor > 0.1 else '' }}">
+                {{ (a.risk_factor*100)|round(1) }}%
+              </td>
+              <td class="text-danger fw-semibold">{{ (a.amount * a.risk_factor)|round(2) }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 学生填写答案 -->
+  <div class="card mb-4" style="border:2px solid #8e44ad">
+    <div class="card-header fw-bold" style="background:#8e44ad;color:#fff">
+      <i class="fas fa-pencil-alt me-2"></i>第二步：计算并填写你的答案
+    </div>
+    <div class="card-body">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">综合偿付能力充足率（%）</label>
+          <input type="number" name="student_comprehensive" class="form-control form-control-lg"
+                 placeholder="例：142.5" step="0.1" required>
+          <div class="form-text">= 实际资本 / 最低资本 × 100%</div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">核心偿付能力充足率（%）</label>
+          <input type="number" name="student_core" class="form-control form-control-lg"
+                 placeholder="例：120.2" step="0.1" required>
+          <div class="form-text">= 核心资本 / 最低资本 × 100%</div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">基本参数</label>
+          <div class="p-2 rounded small" style="background:#f4f6fa">
+            <div>实际资本：<strong>{{ co.actual_capital }} 亿元</strong></div>
+            <div>核心资本：<strong>{{ co.core_capital }} 亿元</strong></div>
+            <div>操作风险系数：<strong>{{ (co.operational_risk_factor*100)|round(0)|int }}%</strong></div>
+            <div>利率风险附加：<strong>{{ co.interest_rate_risk_add }} 亿元</strong></div>
+          </div>
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-semibold">监管诊断意见（根据计算结果，给出监管评级和处置建议）</label>
+          <textarea name="diagnosis" class="form-control" rows="3"
+                    placeholder="请说明：1.偿付能力是否达标？2.主要风险来源？3.监管建议（如：限制新业务、要求增资等）"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-grid">
+    <button type="submit" class="btn btn-lg fw-bold text-white" style="background:#8e44ad">
+      <i class="fas fa-calculator me-2"></i>提交计算结果
+    </button>
+  </div>
+</form>
+</div></div>
+</div>
+{% endblock %}
