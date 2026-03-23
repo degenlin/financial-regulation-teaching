@@ -1264,8 +1264,9 @@ def create_app():
     init_db()
     return app
 
+create_app()
+
 if __name__ == "__main__":
-    create_app()
     print("=" * 50)
     print("  金融监管教学实验系统  启动中...")
     print("  访问地址: http://127.0.0.1:5000")
