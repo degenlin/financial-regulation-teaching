@@ -72,20 +72,35 @@
               <i class="fas fa-book fa-2x me-3" style="color:#c0392b"></i>
               <div>
                 <div class="text-muted small">课程章节</div>
-                <div class="fs-3 fw-bold">10</div>
+                <div class="fs-3 fw-bold">16</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Chapter scores chart -->
-      <div class="card mb-4">
-        <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
-          <i class="fas fa-chart-line me-2"></i>各章节平均测验成绩
+      <!-- Charts row -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-8">
+          <div class="card h-100">
+            <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+              <i class="fas fa-chart-bar me-2"></i>各章节平均测验成绩
+            </div>
+            <div class="card-body">
+              <canvas id="chapterChart" height="120"></canvas>
+            </div>
+          </div>
         </div>
-        <div class="card-body">
-          <canvas id="chapterChart" height="80"></canvas>
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header fw-bold" style="background:#1a3a6b;color:#fff">
+              <i class="fas fa-chart-pie me-2"></i>成绩分布
+            </div>
+            <div class="card-body d-flex flex-column justify-content-center">
+              <canvas id="scoreDistChart"></canvas>
+              <div class="mt-2 small text-center text-muted">（基于全部测验记录）</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -132,8 +147,10 @@
 {% endblock %}
 {% block extra_js %}
 <script>
+// 柱状图：各章节平均成绩
 const labels = [{% for ch in chapters %}"第{{ ch.num }}章",{% endfor %}];
 const data   = [{% for ch in chapters %}{{ scores[ch.id].avg_score|round(1) if ch.id in scores and scores[ch.id].avg_score else 0 }},{% endfor %}];
+const colors = data.map(v => v >= 80 ? 'rgba(30,139,76,0.75)' : v >= 60 ? 'rgba(46,117,182,0.75)' : 'rgba(192,57,43,0.75)');
 new Chart(document.getElementById('chapterChart'), {
   type: 'bar',
   data: {
@@ -141,17 +158,50 @@ new Chart(document.getElementById('chapterChart'), {
     datasets: [{
       label: '平均正确率(%)',
       data,
-      backgroundColor: 'rgba(46,117,182,0.7)',
-      borderColor: '#1a3a6b',
-      borderWidth: 1,
-      borderRadius: 6,
+      backgroundColor: colors,
+      borderRadius: 5,
     }]
   },
   options: {
     responsive: true,
-    plugins: { legend: { display: false } },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ctx.parsed.y.toFixed(1) + '%' } }
+    },
     scales: {
-      y: { min: 0, max: 100, ticks: { callback: v => v + '%' } }
+      y: {
+        min: 0, max: 100,
+        ticks: { callback: v => v + '%' },
+        grid: { color: 'rgba(0,0,0,0.05)' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 饼图：成绩分布
+const scoreRanges = ['90-100分', '75-89分', '60-74分', '60分以下'];
+const allScores = [{% for ch in chapters %}{% if ch.id in scores and scores[ch.id].avg_score %}{{ scores[ch.id].avg_score|round(1) }},{% endif %}{% endfor %}];
+const dist = [0, 0, 0, 0];
+allScores.forEach(s => {
+  if (s >= 90) dist[0]++;
+  else if (s >= 75) dist[1]++;
+  else if (s >= 60) dist[2]++;
+  else dist[3]++;
+});
+new Chart(document.getElementById('scoreDistChart'), {
+  type: 'doughnut',
+  data: {
+    labels: scoreRanges,
+    datasets: [{
+      data: dist,
+      backgroundColor: ['#1e8b4c', '#2e75b6', '#f39c12', '#c0392b'],
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 11 } } }
     }
   }
 });

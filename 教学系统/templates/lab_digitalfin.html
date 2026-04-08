@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}实验7：数字金融监管综合实验{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-10">
+
+<div class="card mb-4" style="background:linear-gradient(135deg,#0a3a5a,#16a085);color:#fff">
+  <div class="card-body py-3">
+    <div class="d-flex align-items-center">
+      <div>
+        <span class="badge bg-warning text-dark mb-1">实验七 · 第14章</span>
+        <h4 class="fw-bold mb-0">数字金融监管综合实验</h4>
+        <p class="mb-0 opacity-75 small">三个模块：P2P合规核查 · 数字人民币场景判断 · 监管科技工具匹配</p>
+      </div>
+      <a href="/student" class="btn btn-outline-light btn-sm ms-auto">返回</a>
+    </div>
+  </div>
+</div>
+
+<form method="POST" action="/lab/digitalfin/submit">
+
+<!-- ══ Part A: P2P合规核查 ══════════════════════════════════ -->
+<div class="card mb-4 border-danger">
+  <div class="card-header fw-bold" style="background:#c0392b;color:#fff">
+    <i class="fas fa-search me-2"></i>Part A：P2P平台合规核查（共30分）
+  </div>
+  <div class="card-body">
+    <div class="alert alert-warning">
+      <i class="fas fa-info-circle me-2"></i>
+      <strong>任务：</strong>根据P2P网络借贷平台的经营特征，判断其合规状态（合规 / 部分违规 / 严重违规）
+    </div>
+    {% for p in p2p_platforms %}
+    <div class="card mb-3" style="border-left:4px solid #c0392b">
+      <div class="card-body">
+        <div class="d-flex align-items-start mb-2">
+          <span class="badge bg-danger me-2">平台{{ loop.index }}</span>
+          <div>
+            <strong>{{ p.name }}</strong>
+            <span class="text-muted small ms-2">{{ p.desc }}</span>
+          </div>
+        </div>
+        <table class="table table-sm table-bordered mb-3">
+          <thead class="table-light"><tr><th>核查项目</th><th>平台描述</th></tr></thead>
+          <tbody>
+          {% for k, v in p.features.items() %}
+          <tr>
+            <td class="fw-bold text-nowrap" style="width:140px">{{ k }}</td>
+            <td>{{ v }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">合规判断：</label>
+            <div class="d-flex gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="p2p_{{ p.id }}" value="comply" required>
+                <label class="form-check-label text-success fw-bold">合规</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="p2p_{{ p.id }}" value="partial">
+                <label class="form-check-label text-warning fw-bold">部分违规</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="p2p_{{ p.id }}" value="violate">
+                <label class="form-check-label text-danger fw-bold">严重违规</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ══ Part B: e-CNY场景判断 ══════════════════════════════ -->
+<div class="card mb-4 border-primary">
+  <div class="card-header fw-bold" style="background:#1a5276;color:#fff">
+    <i class="fas fa-coins me-2"></i>Part B：数字人民币（e-CNY）场景判断（共40分）
+  </div>
+  <div class="card-body">
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle me-2"></i>
+      <strong>任务：</strong>判断以下关于数字人民币的描述或操作场景是否正确（是 / 否）
+    </div>
+    {% for sc in ecny_scenarios %}
+    <div class="card mb-3" style="border-left:4px solid #2e75b6">
+      <div class="card-body">
+        <div class="d-flex align-items-start mb-2">
+          <span class="badge" style="background:#2e75b6" class="me-2">场景{{ sc.id }}</span>
+          <p class="mb-2 ms-2">{{ sc.scenario }}</p>
+        </div>
+        <p class="fw-bold text-primary mb-2">{{ sc.question }}</p>
+        <div class="d-flex gap-3">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="ecny_{{ sc.id }}" value="yes" required>
+            <label class="form-check-label text-success fw-bold">是 / 正确</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="ecny_{{ sc.id }}" value="no">
+            <label class="form-check-label text-danger fw-bold">否 / 不正确</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ══ Part C: RegTech工具匹配 ══════════════════════════ -->
+<div class="card mb-4 border-success">
+  <div class="card-header fw-bold" style="background:#1e8b4c;color:#fff">
+    <i class="fas fa-robot me-2"></i>Part C：监管科技（RegTech）工具匹配（共24分）
+  </div>
+  <div class="card-body">
+    <div class="alert alert-success">
+      <i class="fas fa-info-circle me-2"></i>
+      <strong>任务：</strong>为以下监管痛点选择最合适的RegTech解决方案
+    </div>
+    {% for rt in regtech_tools %}
+    <div class="card mb-3" style="border-left:4px solid #1e8b4c">
+      <div class="card-body">
+        <div class="d-flex align-items-start mb-3">
+          <span class="badge bg-success me-2">问题{{ rt.id }}</span>
+          <p class="mb-0 fw-bold">{{ rt.problem }}</p>
+        </div>
+        <div class="row g-2">
+          {% for key, val in rt.tools.items() %}
+          <div class="col-md-6">
+            <div class="form-check p-2 rounded" style="background:#f4f6fa;border:1px solid #dee2e6">
+              <input class="form-check-input" type="radio" name="regtech_{{ rt.id }}" value="{{ key }}" required>
+              <label class="form-check-label">
+                <strong class="text-success">{{ key }}.</strong> {{ val }}
+              </label>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- 提交 -->
+<div class="text-center mb-4">
+  <button type="submit" class="btn btn-lg px-5 text-white fw-bold"
+          style="background:linear-gradient(90deg,#0a3a5a,#16a085)">
+    <i class="fas fa-paper-plane me-2"></i>提交答案
+  </button>
+</div>
+
+</form>
+</div></div>
+</div>
+{% endblock %}

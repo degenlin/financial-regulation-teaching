@@ -26,3 +26,8 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+.claude/
+
+# Large files not needed for deployment
+金融监管实验答案解析.zip
+胡继晔《金融监管》课件-16讲/

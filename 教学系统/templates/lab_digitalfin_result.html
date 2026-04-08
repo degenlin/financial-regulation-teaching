@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}实验7结果：数字金融监管{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center"><div class="col-xl-10">
+
+<!-- 总分 -->
+<div class="card mb-4 text-center" style="background:linear-gradient(135deg,#0a3a5a,#16a085);color:#fff">
+  <div class="card-body py-4">
+    <div class="fs-1 fw-bold">{{ score }} <span class="fs-4 opacity-75">/ {{ total }} 分</span></div>
+    <div class="fs-5 mt-1">
+      {% if score >= total * 0.85 %}优秀 — 数字金融监管掌握扎实！
+      {% elif score >= total * 0.6 %}良好 — 基本掌握，可进一步巩固
+      {% else %}需加强 — 建议复习第14章数字金融内容
+      {% endif %}
+    </div>
+    <a href="/lab/digitalfin" class="btn btn-outline-light btn-sm mt-2">重新挑战</a>
+    <a href="/student" class="btn btn-outline-light btn-sm mt-2 ms-2">返回主页</a>
+  </div>
+</div>
+
+<!-- ══ Part A 结果 ══ -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#c0392b;color:#fff">
+    <i class="fas fa-search me-2"></i>Part A：P2P平台合规核查
+  </div>
+  <div class="card-body">
+    {% for r in p2p_results %}
+    <div class="card mb-3 {% if r.correct %}border-success{% else %}border-danger{% endif %}">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <span class="badge {% if r.correct %}bg-success{% else %}bg-danger{% endif %} me-2">
+            {% if r.correct %}+10分{% else %}0分{% endif %}
+          </span>
+          <strong>{{ r.platform.name }}</strong>
+          <span class="ms-auto badge {% if r.platform.verdict == '合规' %}bg-success{% elif r.platform.verdict == '部分违规' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+            正确答案：{{ r.platform.verdict }}
+          </span>
+        </div>
+        {% if not r.correct %}
+        <div class="alert alert-danger py-2 mb-2">
+          <small>您的判断：
+            {% if r.answer == 'comply' %}合规
+            {% elif r.answer == 'partial' %}部分违规
+            {% elif r.answer == 'violate' %}严重违规
+            {% else %}（未作答）{% endif %}
+          </small>
+        </div>
+        {% endif %}
+        {% if r.platform.violations %}
+        <div class="mb-1"><small class="text-danger fw-bold">违规点：</small>
+          {% for v in r.platform.violations %}
+          <span class="badge bg-danger me-1">{{ v }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <div class="alert alert-light py-1 mb-0">
+          <small><i class="fas fa-lightbulb text-warning me-1"></i>{{ r.platform.explanation }}</small>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ══ Part B 结果 ══ -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#1a5276;color:#fff">
+    <i class="fas fa-coins me-2"></i>Part B：数字人民币场景判断
+  </div>
+  <div class="card-body">
+    {% for r in ecny_results %}
+    <div class="card mb-3 {% if r.correct %}border-success{% else %}border-danger{% endif %}">
+      <div class="card-body">
+        <div class="d-flex align-items-start mb-2">
+          <span class="badge {% if r.correct %}bg-success{% else %}bg-danger{% endif %} me-2 mt-1">
+            {% if r.correct %}+8分{% else %}0分{% endif %}
+          </span>
+          <div>
+            <p class="mb-1">{{ r.scenario.scenario }}</p>
+            <p class="fw-bold mb-1 text-primary">{{ r.scenario.question }}</p>
+          </div>
+        </div>
+        <div class="d-flex gap-3 mb-2">
+          <span>您的回答：<strong>{% if r.answer == 'yes' %}是/正确{% elif r.answer == 'no' %}否/不正确{% else %}未作答{% endif %}</strong></span>
+          <span>正确答案：<strong class="text-success">{% if r.scenario.correct == 'yes' %}是/正确{% else %}否/不正确{% endif %}</strong></span>
+        </div>
+        <div class="alert alert-light py-1 mb-0">
+          <small><i class="fas fa-lightbulb text-warning me-1"></i>{{ r.scenario.explanation }}</small>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ══ Part C 结果 ══ -->
+<div class="card mb-4">
+  <div class="card-header fw-bold" style="background:#1e8b4c;color:#fff">
+    <i class="fas fa-robot me-2"></i>Part C：监管科技工具匹配
+  </div>
+  <div class="card-body">
+    {% for r in regtech_results %}
+    <div class="card mb-3 {% if r.correct %}border-success{% else %}border-danger{% endif %}">
+      <div class="card-body">
+        <div class="d-flex align-items-start mb-2">
+          <span class="badge {% if r.correct %}bg-success{% else %}bg-danger{% endif %} me-2 mt-1">
+            {% if r.correct %}+8分{% else %}0分{% endif %}
+          </span>
+          <p class="mb-0 fw-bold">{{ r.tool.problem }}</p>
+        </div>
+        <div class="row g-2 mb-2">
+          {% for key, val in r.tool.tools.items() %}
+          <div class="col-md-6">
+            <div class="p-2 rounded small
+              {% if key == r.tool.correct_tool %}border border-success bg-success bg-opacity-10
+              {% elif key == r.answer and not r.correct %}border border-danger bg-danger bg-opacity-10
+              {% else %}bg-light{% endif %}">
+              <strong>{{ key }}.</strong> {{ val }}
+              {% if key == r.tool.correct_tool %}<i class="fas fa-check text-success ms-1"></i>{% endif %}
+              {% if key == r.answer and not r.correct %}<i class="fas fa-times text-danger ms-1"></i>{% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="alert alert-light py-1 mb-0">
+          <small><i class="fas fa-lightbulb text-warning me-1"></i>{{ r.tool.explanation }}</small>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+</div></div>
+</div>
+{% endblock %}

@@ -13,6 +13,7 @@ from exp_data import (
     INSIDER_CASES, INFO_DISCLOSURE_ITEMS,
     INSURANCE_COMPANIES, calc_insurance_solvency,
     MARKET_DATA,
+    P2P_PLATFORMS, ECNY_SCENARIOS, REGTECH_TOOLS,
 )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -135,6 +136,18 @@ def init_db():
          "国际监管协调机构：巴塞尔银行监管委员会（BCBS）、国际证监会组织（IOSCO）、国际保险监督官协会（IAIS）、金融稳定理事会（FSB）。G20框架下的监管改革（2008年后）。跨境监管合作机制：信息共享、监管等值认定。���国参与国际监管合作的进展。"),
         (10, "宏观审慎监管与系统性风险", "十",
          "系统性风险的两个维度：时间维度（顺周期性，用CCyB应对）和跨机构维度（系统重要性，用SIFI附加资本应对）。核心工具：逆周期资本缓冲（CCyB，基于信贷/GDP缺口，最高2.5%）、系统重要性银行附加资本（G-SIB/D-SIB，0.5%~3.5%）、贷款价值比（LTV）、存贷比。CoVaR测量系统性风险贡献。"),
+        (11, "证券监管前沿与资本市场改革", "十一",
+         "注册制改革（科创板2019→创业板2020→全面注册制2023）：从审批制到信息披露为核心的市场化改革。集体诉讼制度：证券代表人诉讼为投资者提供低成本维权途径。高频交易监管：算法交易报备、熔断机制。ESG信息披露要求：上交所/深交所强制披露框架。跨境监管合作：中美审计监管合作协议（2022）。"),
+        (12, "保险法与保险监管", "十二",
+         "《保险法》2009年修订核心：强化投保人与被保险人保护，规范保险合同条款，明确理赔时限。偿付能力监管（偿二代C-ROSS）：三支柱框架，综合/核心偿付能力充足率双线达标要求。保险公司市场退出：接管、整顿、撤销、破产四类处置方式；保险保障基金（人身险90%上限35万，财险90%上限10万）。系统重要性保险机构（G-SII）附加监管。"),
+        (13, "信托法与信托监管", "十三",
+         "信托三要素：委托人、受托人、受益人；受托人的信义义务（忠诚义务+谨慎投资义务）。中国信托公司监管：'一法三规'框架（信托法+信托公司管理办法+资金信托办法+净资本管理办法）。2023年信托业务分类改革：资产服务信托、资产管理信托、公益慈善信托三大类，彻底终结融资类信托通道业务。净资本监管：净资本不低于各类风险资本之和的100%。"),
+        (14, "数字金融与金融科技监管", "十四",
+         "数字人民币（e-CNY）：央行数字货币（CBDC），双层运营体系（央行-商业银行），M0层面替代，可控匿名设计。互联网平台金融监管：2020-2021平台整治（蚂蚁集团上市叫停、《非银行支付机构监督管理条例》2023）。区块链与加密资产：2021年全面禁止加密货币交易与挖矿，香港2023开放零售加密交易。开放银行与API监管：数据安全与用户授权合规。"),
+        (15, "地方金融监管", "十五",
+         "中央地方金融监管分工：国家金融监管总局负责持牌金融机构，地方金融监管局（原地方金融办）负责'7+4'类机构（小贷公司、融资担保、区域性股权市场、典当、融资租赁、商业保理、地方资产管理公司+4类）。地方金融风险：P2P清退（2021年全部出清）、地方AMC处置不良资产。地方政府隐性债务：城投平台融资监管，'35号文'、'46号文'等政策演进。"),
+        (16, "综合监管与金融稳定法", "十六",
+         "《金融稳定法》（2023年）核心内容：建立金融稳定保障基金（国家层面），明确金融稳定工作机制，健全系统性金融风险防范处置体系。金融稳定理事会（FSB）全球框架：G20授权，协调系统性风险监管，SIFI名单发布。中国金融委/金融稳定发展委员会：统筹协调一行一局一会。'防范化解重大金融风险'：2017-2022攻坚战阶段性成果（P2P清退、资管新规落地、隐债管控）。"),
     ]
     for cid, ctitle, cnum, csummary in chapters_data:
         db.execute(
@@ -282,6 +295,178 @@ def init_db():
             "(chapter_id,question,option_a,option_b,option_c,option_d,answer,explanation,qtype)"
             " VALUES(?,?,?,?,?,?,?,?,?)", q)
 
+    # seed quizzes for ch2 监管理论基础
+    q2 = [
+        (2, "下列哪种理论认为监管机构最终会被监管对象'俘获'？",
+         "公共利益理论", "管制俘获理论", "激励监管理论", "信息不对称理论",
+         "B", "管制俘获理论（Stigler, 1971）认为监管者会逐渐代表被监管行业的利益", "single"),
+        (2, "逆向选择问题在金融市场中的典型表现是？",
+         "借款人获得资金后降低努力程度",
+         "质量好的产品和质量差的产品以相同价格出售，导致劣币驱逐良币",
+         "存款人挤兑银行",
+         "银行过度放贷",
+         "B", "逆向选择源于签约前信息不对称：贷款市场上高风险借款人愿意支付更高利率，驱逐低风险借款人", "single"),
+        (2, "道德风险（Moral Hazard）在金融监管中的典型案例是？",
+         "保险公司因投保人隐瞒病史而蒙受损失",
+         "银行'大而不倒'导致过度冒险",
+         "基金经理选股失误",
+         "外汇市场汇率波动",
+         "B", "道德风险是签约后信息不对称：'大而不倒'使银行知道会被救助，从而激励其过度冒险", "single"),
+    ]
+    for q in q2:
+        db.execute(
+            "INSERT OR IGNORE INTO quizzes"
+            "(chapter_id,question,option_a,option_b,option_c,option_d,answer,explanation,qtype)"
+            " VALUES(?,?,?,?,?,?,?,?,?)", q)
+
+    # seed quizzes for ch6 金融控股公司监管
+    q6 = [
+        (6, "金融控股公司监管中'双重杠杆'（Double Leverage）指的是？",
+         "子公司持有两倍杠杆的金融工具",
+         "母公司通过债务融资向子公司注入股权，造成资本虚增",
+         "控股公司持有两类以上金融牌照",
+         "集团内部交叉持股",
+         "B", "双重杠杆：母公司借债购入子公司股权，子公司以该股权为资本金，实质上集团资本被重复计算", "single"),
+        (6, "2020年《金融控股公司监督管理试行办法》规定，设立金融控股公司的资产规模门槛是？",
+         "500亿元", "1000亿元", "500亿元（含金融机构资产）", "资产规模不作要求，以牌照数量判断",
+         "A", "非金融企业控股两类及以上金融机构，且金融机构总资产500亿元以上须申请设立金融控股公司", "single"),
+        (6, "金融控股公司内部风险传染最可能通过哪种机制发生？",
+         "子公司之间的产品竞争", "集团内部关联交易与资金划转", "同一品牌使用", "共享IT系统",
+         "B", "关联交易是集团内风险传染的主要渠道：一个子公司的亏损通过关联贷款、担保蔓延到其他子公司", "single"),
+    ]
+    for q in q6:
+        db.execute(
+            "INSERT OR IGNORE INTO quizzes"
+            "(chapter_id,question,option_a,option_b,option_c,option_d,answer,explanation,qtype)"
+            " VALUES(?,?,?,?,?,?,?,?,?)", q)
+
+    # seed quizzes for ch7 影子银行监管
+    q7 = [
+        (7, "2018年'资管新规'最核心的监管目标是？",
+         "扩大资管产品规模", "统一监管标准，打破刚性兑付，推动净值化转型",
+         "禁止商业银行发行理财产品", "推动资管产品上市交易",
+         "B", "资管新规旨在消除监管套利、打破刚兑、统一杠杆上限，让净值波动反映真实风险", "single"),
+        (7, "影子银行的主要系统性风险不包括？",
+         "期限错配（短借长投）", "杠杆放大",
+         "严格的监管信息披露", "监管套利",
+         "C", "影子银行恰恰缺乏严格的信息披露，这是其风险隐蔽性强的原因之一", "single"),
+        (7, "FSB（金融稳定理事会）定义影子银行的核心特征是？",
+         "在银行体系外进行信用中介活动",
+         "在海外注册的离岸金融机构",
+         "规模超过1万亿美元的非银金融机构",
+         "专门从事衍生品交易的机构",
+         "A", "FSB将影子银行定义为：在正规银行体系之外从事信用中介活动的实体和活动", "single"),
+    ]
+    for q in q7:
+        db.execute(
+            "INSERT OR IGNORE INTO quizzes"
+            "(chapter_id,question,option_a,option_b,option_c,option_d,answer,explanation,qtype)"
+            " VALUES(?,?,?,?,?,?,?,?,?)", q)
+
+    # seed quizzes for ch9 国际金融监管协调
+    q9 = [
+        (9, "金融稳定理事会（FSB）是在哪次危机后、由哪个组织授权成立的？",
+         "1997亚洲金融危机 / G7", "2008全球金融危机 / G20",
+         "2010欧债危机 / IMF", "2001阿根廷危机 / 世界银行",
+         "B", "FSB于2009年G20伦敦峰会授权成立，由原金融稳定论坛（FSF）扩展而来", "single"),
+        (9, "巴塞尔协议（Basel）由哪个机构制定？",
+         "国际货币基金组织（IMF）", "世界银行",
+         "巴塞尔银行监管委员会（BCBS）", "国际证监会组织（IOSCO）",
+         "C", "BCBS成立于1974年，由G10国家中央银行和银行监管当局组成，负责制定银行监管国际标准", "single"),
+        (9, "跨境监管合作中'监管等值'（Equivalence）认定的意义是？",
+         "不同国家使用完全相同的监管规则",
+         "一国承认另一国的监管体系达到同等保护水平，从而给予市场准入便利",
+         "强制要求外资机构适用本国法规",
+         "取消跨境金融交易的审批程序",
+         "B", "等值认定允许双方互相承认监管体系，降低跨境合规成本，是EU金融市场互联互通的核心机制", "single"),
+    ]
+    for q in q9:
+        db.execute(
+            "INSERT OR IGNORE INTO quizzes"
+            "(chapter_id,question,option_a,option_b,option_c,option_d,answer,explanation,qtype)"
+            " VALUES(?,?,?,?,?,?,?,?,?)", q)
+
+    # seed quizzes for ch11-16
+    q_new = [
+        # ch11 证券监管前沿
+        (11, "中国注册制改革的核心理念是？",
+         "证监会审批企业质量好坏",
+         "以信息披露为核心，由市场判断企业价值",
+         "上市公司数量越多越好",
+         "取消所有上市标准",
+         "B", "注册制下，监管机构不对发行人的盈利能力和投资价值作判断，核心是真实、准确、完整的信息披露", "single"),
+        (11, "2022年中美签署的审计监管合作协议解决的核心问题是？",
+         "中美两国互相承认对方的会计准则",
+         "美国PCAOB获得对中概股审计底稿的检查权",
+         "中国企业可以在美国直接注册",
+         "取消中概股在美上市限制",
+         "B", "协议允许PCAOB检查/调查在美上市的中国企业审计工作底稿，解决长期悬而未决的审计监管争议", "single"),
+        # ch12 保险法
+        (12, "中国保险保障基金对个人保单的赔付上限（人身险公司破产时）是？",
+         "全额保障", "90%赔付，上限10万元",
+         "90%赔付，上限35万元", "50%赔付，无上限",
+         "C", "保险保障基金：人身险90%赔付，单个被保险人上限35万元；财险90%赔付，上限10万元", "single"),
+        (12, "保险公司市场退出的法定程序顺序（从轻到重）是？",
+         "撤销→接管→整顿→破产",
+         "接管→整顿→撤销→破产",
+         "整顿→接管→撤销→破产",
+         "破产→接管→整顿→撤销",
+         "B", "依据《保险法》，处置顺序：接管（最轻）→整顿（限期改善）→撤销（吊销牌照）→破产（最重）", "single"),
+        # ch13 信托法
+        (13, "2023年信托业务分类改革后，哪类业务被明令停止新增？",
+         "资产服务信托（家庭信托）",
+         "公益慈善信托",
+         "融资类信托（通道业务）",
+         "资产管理信托（标准化产品）",
+         "C", "融资类信托（以信托为通道为融资方提供资金）是本次改革打击的核心，全部叫停新增", "single"),
+        (13, "信托受托人最核心的法律义务是？",
+         "最大化委托人利润", "忠诚义务与谨慎投资义务（信义义务）",
+         "保证受益人收益不亏损", "保密义务",
+         "B", "信义义务（Fiduciary Duty）包括忠诚义务（避免利益冲突）和谨慎义务（审慎管理资产）", "single"),
+        # ch14 数字金融
+        (14, "数字人民币（e-CNY）的技术架构特征是？",
+         "去中心化，基于区块链发行",
+         "双层运营体系（央行→商业银行→公众），替代M0",
+         "完全匿名，不留任何交易记录",
+         "仅供跨境支付使用",
+         "B", "e-CNY采用双层架构：央行发行并管理，商业银行向公众分发；替代实物现金M0；可控匿名（央行可溯源）", "single"),
+        (14, "2021年中国对加密货币的监管立场是？",
+         "允许个人持有，禁止机构交易",
+         "全面禁止加密货币交易、挖矿及相关服务",
+         "建立监管沙盒允许有限测试",
+         "要求持牌经营，允许交易所运营",
+         "B", "2021年9月，中国人民银行等十部委联合公告：虚拟货币相关业务全面违法，包括挖矿、交易、提供服务", "single"),
+        # ch15 地方金融监管
+        (15, "地方金融监管局负责监管的'7类'机构中不包括？",
+         "小额贷款公司", "融资担保公司",
+         "商业银行分支机构", "融资租赁公司",
+         "C", "商业银行（含分支机构）由国家金融监管总局监管；地方金融局管辖小贷、融担、区域股权、典当、融租、保理、地方AMC等", "single"),
+        (15, "P2P网络借贷平台在中国的最终监管结果是？",
+         "转型为持牌网络小贷公司继续运营",
+         "全部清退，行业全面出清（至2021年底）",
+         "并入商业银行互联网金融部门",
+         "转型为资产管理公司",
+         "B", "经过2018-2021年专项整治，中国P2P行业全部清退，无一平台成功转型为合规机构", "single"),
+        # ch16 综合监管
+        (16, "《金融稳定法》（2023年）设立金融稳定保障基金的主要来源是？",
+         "财政部直接拨款",
+         "金融机构缴纳的风险准备金与处置收益",
+         "央行发行债券募资",
+         "向社会公开募集",
+         "B", "金融稳定保障基金由金融机构缴纳资金、金融风险处置回收资金等来源构成，用于具有系统性风险的重大金融风险处置", "single"),
+        (16, "下列哪项是2017-2022年'防范化解重大金融风险攻坚战'的成果？",
+         "人民币汇率完全自由浮动",
+         "P2P全部出清、资管新规落地、隐性债务管控加强",
+         "商业银行全面转型为投资银行",
+         "取消外资金融机构准入限制",
+         "B", "攻坚战三大成果：互联网金融（P2P）风险化解、资管行业统一监管（资管新规）、地方政府隐性债务管控", "single"),
+    ]
+    for q in q_new:
+        db.execute(
+            "INSERT OR IGNORE INTO quizzes"
+            "(chapter_id,question,option_a,option_b,option_c,option_d,answer,explanation,qtype)"
+            " VALUES(?,?,?,?,?,?,?,?,?)", q)
+
     # seed experiments
     exps = [
         (1, "银行资本充足率压力测试模拟", 3,
@@ -313,6 +498,9 @@ def init_db():
          "simulation", '{}'),
         (15, "银行风险控制综合实验", 3,
          "模拟银行风控官，处置信用、市场、操作、流动性四类风险事件，并进行监管指标合规判断。",
+         "simulation", '{}'),
+        (16, "数字金融监管综合实验", 14,
+         "三个模块：(A)P2P平台合规核查 (B)数字人民币场景判断 (C)监管科技工具匹配。结合第14讲数字金融内容，综合考察数字金融监管知识。",
          "simulation", '{}'),
     ]
     for e in exps:
@@ -1258,13 +1446,80 @@ def lab_bankrisk_submit():
                            ind_answers=ind_answers,
                            ind_labels=ind_labels)
 
+# ── 实验7：数字金融监管综合实验 ─────────────────────────────
+
+@app.route("/lab/digitalfin")
+@require_login
+def lab_digitalfin():
+    u = current_user()
+    return render_template("lab_digitalfin.html", u=u,
+                           p2p_platforms=P2P_PLATFORMS,
+                           ecny_scenarios=ECNY_SCENARIOS,
+                           regtech_tools=REGTECH_TOOLS)
+
+@app.route("/lab/digitalfin/submit", methods=["POST"])
+@require_login
+def lab_digitalfin_submit():
+    u = current_user()
+    score = 0
+    total = 0
+
+    # Part A: P2P合规判断（每题正确10分）
+    p2p_results = []
+    for p in P2P_PLATFORMS:
+        ans = request.form.get(f"p2p_{p['id']}", "")
+        correct_ans = "comply" if p["verdict"] == "合规" else ("partial" if p["verdict"] == "部分违规" else "violate")
+        correct = (ans == correct_ans)
+        if correct:
+            score += 10
+        total += 10
+        p2p_results.append({"platform": p, "answer": ans,
+                             "correct": correct, "correct_ans": correct_ans})
+
+    # Part B: e-CNY场景判断（每题正确8分）
+    ecny_results = []
+    for sc in ECNY_SCENARIOS:
+        ans = request.form.get(f"ecny_{sc['id']}", "")
+        correct = (ans == sc["correct"])
+        if correct:
+            score += 8
+        total += 8
+        ecny_results.append({"scenario": sc, "answer": ans, "correct": correct})
+
+    # Part C: RegTech工具匹配（每题正确8分）
+    regtech_results = []
+    for rt in REGTECH_TOOLS:
+        ans = request.form.get(f"regtech_{rt['id']}", "")
+        correct = (ans == rt["correct_tool"])
+        if correct:
+            score += 8
+        total += 8
+        regtech_results.append({"tool": rt, "answer": ans, "correct": correct})
+
+    db = get_db()
+    db.execute(
+        "INSERT INTO exp_submissions(exp_id,user_id,result,score)"
+        " VALUES(16,?,?,?)",
+        (u["id"],
+         json.dumps({"p2p_score": sum(10 for r in p2p_results if r["correct"]),
+                     "ecny_score": sum(8 for r in ecny_results if r["correct"]),
+                     "regtech_score": sum(8 for r in regtech_results if r["correct"])}),
+         score))
+    db.commit()
+    db.close()
+
+    return render_template("lab_digitalfin_result.html", u=u,
+                           p2p_results=p2p_results,
+                           ecny_results=ecny_results,
+                           regtech_results=regtech_results,
+                           score=score, total=total)
+
+
 def create_app():
     if not os.path.exists(UPLOAD_DIR):
         os.makedirs(UPLOAD_DIR)
     init_db()
     return app
-
-create_app()
 
 if __name__ == "__main__":
     print("=" * 50)

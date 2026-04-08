@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金融监管理论与实践 — 胡继晔 交互式教学平台</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0a1628;--bg2:#0f2040;--bg3:#152a52;
+  --card:rgba(255,255,255,0.055);--card2:rgba(255,255,255,0.09);
+  --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.18);
+  --navy:#1a3a6b;--blue:#2e75b6;--sky:#4db8ff;
+  --gold:#ffd700;--gold2:#ffec6e;
+  --green:#26a65b;--green2:#4cdf7f;
+  --red:#e74c3c;--red2:#ff7675;
+  --orange:#f39c12;--purple:#8e44ad;
+  --text:#e8f0fe;--muted:rgba(232,240,254,0.55);--muted2:rgba(232,240,254,0.35);
+  --radius:12px;--radius2:8px;
+  --shadow:0 8px 32px rgba(0,0,0,0.4);
+  --glow:0 0 20px rgba(46,117,182,0.3);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"PingFang SC","Microsoft YaHei",Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer}
+input,select,textarea{font-family:inherit}
+
+/* ── Scrollbar ─────────────────────────── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--blue);border-radius:3px}
+
+/* ── Nav ────────────────────────────────── */
+.topnav{position:sticky;top:0;z-index:100;background:rgba(10,22,40,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:0;height:56px}
+.nav-brand{font-size:15px;font-weight:700;color:var(--gold);margin-right:32px;white-space:nowrap;letter-spacing:.5px}
+.nav-brand span{color:var(--sky)}
+.nav-tabs{display:flex;gap:2px;flex:1;overflow-x:auto}
+.nav-tab{padding:8px 18px;border-radius:var(--radius2);font-size:13px;font-weight:500;color:var(--muted);border:none;background:transparent;transition:all .2s;white-space:nowrap}
+.nav-tab:hover{color:var(--text);background:var(--card)}
+.nav-tab.active{color:var(--gold);background:rgba(255,215,0,0.1);border-bottom:2px solid var(--gold)}
+.nav-tag{font-size:10px;background:var(--red);color:#fff;border-radius:8px;padding:1px 5px;margin-left:4px;vertical-align:middle}
+
+/* ── Sections ───────────────────────────── */
+.section{display:none;min-height:calc(100vh - 56px);padding:28px 24px 60px}
+.section.active{display:block}
+.section-inner{max-width:1300px;margin:0 auto}
+
+/* ── Hero ──────────────────────────────── */
+.hero{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border);border-radius:18px;padding:48px 40px;margin-bottom:28px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234db8ff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.3);border-radius:20px;padding:5px 14px;font-size:12px;color:var(--gold);margin-bottom:16px}
+.hero h1{font-size:32px;font-weight:800;line-height:1.25;margin-bottom:10px;background:linear-gradient(135deg,#fff,var(--sky));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:15px;color:var(--muted);margin-bottom:24px;max-width:600px}
+.hero-stats{display:flex;gap:20px;flex-wrap:wrap}
+.hstat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);padding:12px 20px;text-align:center;min-width:100px}
+.hstat-num{font-size:26px;font-weight:800;color:var(--gold);line-height:1}
+.hstat-lbl{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* ── Cards grid ─────────────────────────── */
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:900px){.grid4{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid4,.grid3,.grid2{grid-template-columns:1fr}}
+
+/* ── General card ───────────────────────── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all .25s}
+.card:hover{background:var(--card2);border-color:var(--border2);transform:translateY(-2px);box-shadow:var(--shadow)}
+.card-header{background:var(--card2);border-bottom:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;padding:14px 20px;font-weight:700;display:flex;align-items:center;gap:8px}
+.card-body{padding:20px}
+
+/* ── Chapter cards ──────────────────────── */
+.chapter-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .25s;cursor:pointer}
+.chapter-card:hover{background:var(--card2);transform:translateY(-3px);box-shadow:var(--shadow)}
+.chapter-card.expanded{border-color:var(--blue)}
+.ch-head{padding:16px;display:flex;align-items:flex-start;gap:12px}
+.ch-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;background:linear-gradient(135deg,var(--navy),var(--blue))}
+.ch-title{font-size:13px;font-weight:700;line-height:1.3;color:var(--text)}
+.ch-subtitle{font-size:11px;color:var(--muted);margin-top:3px}
+.ch-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}
+.ch-body.open{display:block}
+.ch-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;padding-top:12px}
+.tag{font-size:10px;padding:2px 8px;border-radius:10px;border:1px solid}
+.tag-blue{border-color:var(--blue);color:var(--sky);background:rgba(46,117,182,0.1)}
+.tag-gold{border-color:var(--gold);color:var(--gold);background:rgba(255,215,0,0.08)}
+.tag-green{border-color:var(--green);color:var(--green2);background:rgba(38,166,91,0.08)}
+.tag-red{border-color:var(--red);color:var(--red2);background:rgba(231,76,60,0.08)}
+.ch-summary{font-size:12px;color:var(--muted);line-height:1.7}
+.key-points{margin-top:10px}
+.kp-item{display:flex;gap:8px;margin-bottom:6px;font-size:12px}
+.kp-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);margin-top:5px;flex-shrink:0}
+
+/* ── Lab cards ──────────────────────────── */
+.lab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+@media(max-width:900px){.lab-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.lab-grid{grid-template-columns:1fr}}
+.lab-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .25s;cursor:pointer}
+.lab-card:hover{background:var(--card2);transform:translateY(-3px);box-shadow:var(--shadow)}
+.lab-card.active-lab{border-color:var(--blue);box-shadow:var(--glow)}
+.lab-banner{height:7px}
+.lab-inner{padding:18px}
+.lab-icon{font-size:28px;margin-bottom:8px}
+.lab-num{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.5px;margin-bottom:4px}
+.lab-title{font-size:14px;font-weight:700;margin-bottom:6px}
+.lab-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+.lab-meta{display:flex;gap:8px;flex-wrap:wrap}
+.lm-badge{font-size:10px;padding:2px 8px;border-radius:10px}
+.lab-btn{width:100%;padding:8px;border:1px solid var(--blue);background:rgba(46,117,182,0.1);color:var(--sky);border-radius:var(--radius2);font-size:12px;font-weight:600;transition:all .2s;margin-top:12px}
+.lab-btn:hover{background:var(--blue);color:#fff}
+
+/* ── Lab content panel ─────────────────── */
+.lab-panel{display:none;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;margin-bottom:24px}
+.lab-panel.open{display:block}
+.lab-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.lab-panel-title{font-size:20px;font-weight:800;color:var(--gold)}
+.close-lab{background:var(--card2);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:6px 14px;font-size:12px}
+.close-lab:hover{color:var(--red2);border-color:var(--red)}
+
+/* ── Steps ──────────────────────────────── */
+.step-bar{display:flex;gap:0;margin-bottom:24px;border-radius:8px;overflow:hidden}
+.step-item{flex:1;padding:10px 14px;text-align:center;font-size:12px;background:var(--card);border:1px solid var(--border);cursor:pointer;transition:all .2s}
+.step-item.active{background:var(--navy);border-color:var(--blue);color:var(--gold);font-weight:700}
+.step-content{display:none}
+.step-content.active{display:block}
+
+/* ── Tables ──────────────────────────────── */
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{background:var(--navy);color:var(--text);padding:9px 12px;text-align:left;font-weight:600}
+.data-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.data-table tr:hover td{background:rgba(255,255,255,0.03)}
+.data-table .warn{color:var(--orange);font-weight:700}
+.data-table .danger{color:var(--red2);font-weight:700}
+.data-table .ok{color:var(--green2);font-weight:700}
+
+/* ── Forms ───────────────────────────────── */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);color:var(--text);padding:9px 12px;font-size:13px;outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--blue)}
+.form-select option{background:var(--bg2);color:var(--text)}
+.form-textarea{resize:vertical;min-height:80px}
+.radio-group,.check-group{display:flex;flex-wrap:wrap;gap:8px}
+.radio-item,.check-item{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);padding:7px 12px;cursor:pointer;transition:all .2s;font-size:12px}
+.radio-item:hover,.check-item:hover{border-color:var(--blue)}
+.radio-item input,.check-item input{accent-color:var(--blue)}
+
+/* ── Buttons ──────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:var(--radius2);font-size:13px;font-weight:600;border:none;transition:all .2s;cursor:pointer}
+.btn-primary{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff}
+.btn-primary:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.btn-gold{background:linear-gradient(135deg,#b8860b,var(--gold));color:#000}
+.btn-gold:hover{filter:brightness(1.1)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-success{background:var(--green);color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text)}
+.btn-outline:hover{border-color:var(--blue);color:var(--sky)}
+.btn-lg{padding:12px 28px;font-size:15px}
+.btn-sm{padding:5px 12px;font-size:11px}
+
+/* ── Score display ────────────────────────── */
+.score-box{background:linear-gradient(135deg,var(--navy),#0d2b4e);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;text-align:center}
+.score-num{font-size:64px;font-weight:900;line-height:1;margin-bottom:8px}
+.score-s{color:var(--green2)}
+.score-m{color:var(--gold)}
+.score-l{color:var(--red2)}
+.result-item{display:flex;align-items:flex-start;gap:10px;background:var(--card);border-radius:var(--radius2);padding:12px 14px;margin-bottom:8px;font-size:12px}
+.result-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.result-correct{border-left:3px solid var(--green)}
+.result-wrong{border-left:3px solid var(--red)}
+
+/* ── Alert boxes ──────────────────────────── */
+.alert{border-radius:var(--radius2);padding:12px 16px;font-size:12px;margin-bottom:12px;border:1px solid}
+.alert-info{background:rgba(77,184,255,0.08);border-color:rgba(77,184,255,0.3);color:var(--sky)}
+.alert-warning{background:rgba(243,156,18,0.08);border-color:rgba(243,156,18,0.3);color:var(--orange)}
+.alert-success{background:rgba(38,166,91,0.08);border-color:rgba(38,166,91,0.3);color:var(--green2)}
+.alert-danger{background:rgba(231,76,60,0.08);border-color:rgba(231,76,60,0.3);color:var(--red2)}
+
+/* ── Badges ──────────────────────────────── */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.badge-blue{background:rgba(46,117,182,0.2);color:var(--sky);border:1px solid rgba(77,184,255,0.3)}
+.badge-gold{background:rgba(255,215,0,0.15);color:var(--gold);border:1px solid rgba(255,215,0,0.3)}
+.badge-green{background:rgba(38,166,91,0.15);color:var(--green2);border:1px solid rgba(38,166,91,0.3)}
+.badge-red{background:rgba(231,76,60,0.15);color:var(--red2);border:1px solid rgba(231,76,60,0.3)}
+.badge-orange{background:rgba(243,156,18,0.15);color:var(--orange);border:1px solid rgba(243,156,18,0.3)}
+
+/* ── Progress ─────────────────────────────── */
+.progress{height:8px;background:var(--card);border-radius:4px;overflow:hidden}
+.progress-bar{height:100%;border-radius:4px;transition:width .6s ease}
+.pb-blue{background:linear-gradient(90deg,var(--navy),var(--blue))}
+.pb-gold{background:linear-gradient(90deg,#b8860b,var(--gold))}
+.pb-green{background:linear-gradient(90deg,#1a6b3a,var(--green2))}
+.pb-red{background:linear-gradient(90deg,#7b1d1d,var(--red2))}
+
+/* ── Quiz ─────────────────────────────────── */
+.quiz-q{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
+.quiz-num{font-size:11px;color:var(--gold);font-weight:700;margin-bottom:6px}
+.quiz-text{font-size:14px;font-weight:600;margin-bottom:14px}
+.quiz-opts{display:flex;flex-direction:column;gap:8px}
+.quiz-opt{display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius2);padding:10px 14px;cursor:pointer;transition:all .2s;font-size:13px}
+.quiz-opt:hover{border-color:var(--blue);background:rgba(46,117,182,0.08)}
+.quiz-opt.selected{border-color:var(--blue);background:rgba(46,117,182,0.12)}
+.quiz-opt.correct{border-color:var(--green);background:rgba(38,166,91,0.12)}
+.quiz-opt.wrong{border-color:var(--red);background:rgba(231,76,60,0.1)}
+.opt-key{width:22px;height:22px;border-radius:50%;background:var(--card2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+
+/* ── Section headers ──────────────────────── */
+.sec-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.sec-header h2{font-size:22px;font-weight:800}
+.sec-line{flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent)}
+.sec-badge{font-size:12px;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:20px;padding:3px 12px}
+
+/* ── Info panels ──────────────────────────── */
+.info-panel{background:var(--card);border-left:3px solid var(--blue);border-radius:0 var(--radius2) var(--radius2) 0;padding:12px 16px;font-size:12px;color:var(--muted);line-height:1.7}
+.info-panel strong{color:var(--text)}
+.formula-box{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius2);padding:14px 18px;font-family:monospace;font-size:13px;color:var(--sky);margin:12px 0;line-height:2}
+.formula-box .result{color:var(--gold);font-weight:700;font-size:15px;border-top:1px solid var(--border);margin-top:8px;padding-top:8px}
+
+/* ── Fade animations ──────────────────────── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.section.active{animation:fadeIn .3s ease}
+.lab-panel.open{animation:fadeIn .25s ease}
+
+/* ── Chart containers ─────────────────────── */
+.chart-wrap{position:relative;height:220px;width:100%}
+
+/* ── Divider ──────────────────────────────── */
+.divider{height:1px;background:var(--border);margin:20px 0}
+
+/* ── Scrollable table ─────────────────────── */
+.table-wrap{overflow-x:auto}
+
+/* ── Answer key section ──────────────────── */
+.ans-accord{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+.ans-head{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:var(--card);transition:background .2s}
+.ans-head:hover{background:var(--card2)}
+.ans-head h4{font-size:13px;font-weight:700}
+.ans-chevron{font-size:12px;transition:transform .2s}
+.ans-body{display:none;padding:16px 18px;border-top:1px solid var(--border);font-size:12px;line-height:1.8;color:var(--muted)}
+.ans-body.open{display:block}
+.ans-val{font-size:18px;font-weight:800;color:var(--gold);margin-bottom:6px}
+.ans-steps li{margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAVIGATION ═══════════════════════════════════════════════════ -->
+<nav class="topnav">
+  <div class="nav-brand">⚖️ <span>金融监管</span>理论与实践</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showSection('home')">🏠 主页</button>
+    <button class="nav-tab" onclick="showSection('chapters')">📚 知识体系 <span class="nav-tag">16讲</span></button>
+    <button class="nav-tab" onclick="showSection('labs')">🧪 实验中心 <span class="nav-tag">9实验</span></button>
+    <button class="nav-tab" onclick="showSection('quiz')">📝 随堂测验</button>
+    <button class="nav-tab" onclick="showSection('answers')">🔑 答案解析</button>
+  </div>
+</nav>
+
+<!-- ═══ HOME SECTION ═══════════════════════════════════════════════ -->
+<section id="home" class="section active">
+<div class="section-inner">
+
+  <div class="hero">
+    <div class="hero-badge">📖 中央财经大学 · 胡继晔教授主讲</div>
+    <h1>金融监管理论与实践</h1>
+    <p class="hero-sub">系统掌握金融监管的理论基础、制度框架与前沿实践，从巴塞尔协议到金融稳定法，从压力测试到数字金融监管</p>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num">16</div><div class="hstat-lbl">精讲专题</div></div>
+      <div class="hstat"><div class="hstat-num">9</div><div class="hstat-lbl">仿真实验</div></div>
+      <div class="hstat"><div class="hstat-num">80+</div><div class="hstat-lbl">测验题库</div></div>
+      <div class="hstat"><div class="hstat-num">5</div><div class="hstat-lbl">核心监管框架</div></div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-bottom:24px">
+    <div class="card">
+      <div class="card-header">📊 课程知识图谱</div>
+      <div class="card-body">
+        <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">🗺️ 学习路径</div>
+      <div class="card-body" style="padding:16px">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--blue));display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">①</div>
+            <div><div style="font-weight:700;font-size:13px">理论基础模块 (第1-5讲)</div><div style="font-size:11px;color:var(--muted)">监管导论 · 法经济学 · 法律金融 · 比较经济学 · 国际协调</div></div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1a5c3a,var(--green));display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">②</div>
+            <div><div style="font-weight:700;font-size:13px">宏观政策模块 (第6-7讲)</div><div style="font-size:11px;color:var(--muted)">货币政策与财政政策 · 中央银行监管</div></div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5a1a6b,var(--purple));display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">③</div>
+            <div><div style="font-weight:700;font-size:13px">分业监管模块 (第8-15讲)</div><div style="font-size:11px;color:var(--muted)">银行·证券·保险·信托·数字金融·地方金融</div></div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#6b3a1a,var(--gold));display:flex;align-items:center;justify-content:center;font-size:14px;color:#000;flex-shrink:0">④</div>
+            <div><div style="font-weight:700;font-size:13px">综合监管模块 (第16讲)</div><div style="font-size:11px;color:var(--muted)">综合监管 · 金融稳定法 · TLAC · 系统性风险处置</div></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="alert alert-info">💡 建议按模块顺序学习，先掌握理论再做实验，最终综合测验检验成果</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-header"><h2>🏆 核心监管框架速览</h2><div class="sec-line"></div></div>
+  <div class="grid3" style="margin-bottom:24px">
+    <div class="card" style="border-top:3px solid var(--blue)">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--sky)">🏦 巴塞尔协议III</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.8">
+        <div>CET1 ≥ <strong style="color:var(--text)">4.5%</strong> | Tier1 ≥ <strong style="color:var(--text)">6%</strong> | 总资本 ≥ <strong style="color:var(--text)">8%</strong></div>
+        <div>留存缓冲 <strong style="color:var(--gold)">2.5%</strong> | LCR ≥ <strong style="color:var(--text)">100%</strong></div>
+        <div>NSFR ≥ <strong style="color:var(--text)">100%</strong> | 杠杆率 ≥ <strong style="color:var(--text)">3%</strong></div>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--green)">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--green2)">🏢 C-ROSS偿二代</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.8">
+        <div>综合偿付能力 ≥ <strong style="color:var(--text)">100%</strong></div>
+        <div>核心偿付能力 ≥ <strong style="color:var(--text)">50%</strong></div>
+        <div>最低资本 = √(保险²+市场²+信用²) + 操作+利率</div>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--gold)">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--gold)">🌐 宏观审慎框架</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.8">
+        <div>CCyB最高 <strong style="color:var(--text)">2.5%</strong>（信贷/GDP缺口触发）</div>
+        <div>G-SIB附加资本 <strong style="color:var(--text)">0.5%-3.5%</strong></div>
+        <div>ΔCoVaR衡量系统性风险贡献</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-header"><h2>🧪 实验亮点</h2><div class="sec-line"></div></div>
+  <div class="grid3">
+    <div class="card" onclick="showSection('labs')" style="cursor:pointer;border-left:3px solid var(--red)">
+      <div style="font-size:20px;margin-bottom:6px">🏚️</div>
+      <div style="font-weight:700;font-size:13px;margin-bottom:4px">2008金融危机压力测试</div>
+      <div style="font-size:12px;color:var(--muted)">模拟雷曼破产情景，计算5大银行资本缺口，体验系统性崩溃</div>
+    </div>
+    <div class="card" onclick="showSection('labs')" style="cursor:pointer;border-left:3px solid var(--purple)">
+      <div style="font-size:20px;margin-bottom:6px">🤖</div>
+      <div style="font-weight:700;font-size:13px;margin-bottom:4px">监管沙盒评审官</div>
+      <div style="font-size:12px;color:var(--muted)">扮演FCA评审官，决定AI信贷/区块链保险/稳定币申请的命运</div>
+    </div>
+    <div class="card" onclick="showSection('labs')" style="cursor:pointer;border-left:3px solid var(--gold)">
+      <div style="font-size:20px;margin-bottom:6px">🏛️</div>
+      <div style="font-weight:700;font-size:13px;margin-bottom:4px">🆕 SIFI处置演练</div>
+      <div style="font-size:12px;color:var(--muted)">计算TLAC缺口，设计bail-in方案，阻止系统性崩溃【第16讲】</div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ═══ CHAPTERS SECTION ══════════════════════════════════════════ -->
+<section id="chapters" class="section">
+<div class="section-inner">
+  <div class="sec-header"><h2>📚 全16讲知识体系</h2><div class="sec-line"></div><div class="sec-badge">点击卡片展开详情</div></div>
+  <div class="grid4" id="chaptersGrid"></div>
+</div>
+</section>
+
+<!-- ═══ LABS SECTION ════════════════════════════════════════════ -->
+<section id="labs" class="section">
+<div class="section-inner">
+  <div class="sec-header"><h2>🧪 交互实验中心</h2><div class="sec-line"></div><div class="sec-badge">9个仿真实验</div></div>
+  <div class="lab-grid" id="labsGrid"></div>
+
+  <!-- ── LAB 1: 2008危机压力测试 ─────────────────────── -->
+  <div id="panel-lab1" class="lab-panel">
+    <div class="lab-panel-header">
+      <div class="lab-panel-title">🏚️ 实验一：2008金融危机银行压力测试</div>
+      <button class="close-lab" onclick="closeAllLabs()">✕ 关闭</button>
+    </div>
+    <div class="alert alert-warning">📋 实验目的：基于巴塞尔协议III三大支柱，模拟不同压力情景下5家银行的资本充足率变化，判断哪些银行需要监管介入。</div>
+
+    <div style="margin-bottom:20px">
+      <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--gold)">▶ 第一步：选择压力情景</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <label style="display:block;cursor:pointer">
+          <input type="radio" name="crisis_scenario" value="S1" style="display:none" id="sc_s1">
+          <div class="card" id="sc_s1_card" onclick="selectScenario('S1')" style="border:2px solid var(--border);transition:all .2s">
+            <div style="font-weight:700;color:var(--orange);margin-bottom:4px">🟡 轻度压力 S1</div>
+            <div style="font-size:11px;color:var(--muted)">GDP冲击 −1.0% | 房价 −10% | 违约率+1.5% | 类2001网络泡沫</div>
+          </div>
+        </label>
+        <label style="display:block;cursor:pointer">
+          <input type="radio" name="crisis_scenario" value="S2" style="display:none" id="sc_s2">
+          <div class="card" id="sc_s2_card" onclick="selectScenario('S2')" style="border:2px solid var(--blue)">
+            <div style="font-weight:700;color:var(--orange);margin-bottom:4px">🟠 中度压力 S2 ✓</div>
+            <div style="font-size:11px;color:var(--muted)">GDP冲击 −3.5% | 房价 −25% | 违约率+4% | 类2008Q3水平</div>
+          </div>
+        </label>
+        <label style="display:block;cursor:pointer">
+          <input type="radio" name="crisis_scenario" value="S3" style="display:none" id="sc_s3">
+          <div class="card" id="sc_s3_card" onclick="selectScenario('S3')" style="border:2px solid var(--border);transition:all .2s">
+            <div style="font-weight:700;color:var(--red2);margin-bottom:4px">🔴 严重压力 S3</div>
+            <div style="font-size:11px;color:var(--muted)">GDP冲击 −6.0% | 房价 −40% | 违约率+8% | 类2008.10极端</div>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--gold)">▶ 第二步：分析银行风险敞口</div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>银行</th><th>总资产(亿)</th><th>Tier1充足率</th><th>杠杆倍数</th><th>CDO持仓(亿)</th><th>交易账簿(亿)</th><th>特征</th></tr></thead>
+          <tbody>
+            <tr><td class="ok">雷曼兄弟(模拟)</td><td>6,390</td><td class="warn">11.7%</td><td class="danger">30.7x</td><td class="danger">320</td><td>1,200</td><td style="font-size:11px;color:var(--muted)">高杠杆投行，大量MBS持仓</td></tr>
+            <tr><td>美林银行(模拟)</td><td>9,410</td><td class="warn">8.3%</td><td class="danger">27.9x</td><td class="danger">480</td><td>1,900</td><td style="font-size:11px;color:var(--muted)">CDO持仓巨大，流动性脆弱</td></tr>
+            <tr><td>花旗集团(模拟)</td><td>21,870</td><td class="danger">7.1%</td><td class="warn">19.4x</td><td class="danger">530</td><td>2,300</td><td style="font-size:11px;color:var(--muted)">系统重要性银行，表外风险大</td></tr>
+            <tr><td>贝尔斯登(模拟)</td><td>3,950</td><td class="warn">10.2%</td><td class="danger">34.0x</td><td class="warn">180</td><td>890</td><td style="font-size:11px;color:var(--muted)">回购融资占比极高，流动性最弱</td></tr>
+            <tr><td class="ok">安全储备(模拟)</td><td>880</td><td class="ok">14.8%</td><td class="ok">9.3x</td><td class="ok">10</td><td>80</td><td style="font-size:11px;color:var(--muted)">传统商业银行，较为稳健</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--gold)">▶ 第三步：提交监管建议（每行选一项）</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="form-group"><div class="form-label">雷曼兄弟 → 监管措施</div><select class="form-select" id="c1_action"><option value="">请选择</option><option value="raise">要求增资</option><option value="reduce">压降风险资产</option><option value="restrict">限制业务扩张</option><option value="resolve">介入处置/清算</option><option value="maintain">维持现状</option></select></div>
+        <div class="form-group"><div class="form-label">美林银行 → 监管措施</div><select class="form-select" id="c2_action"><option value="">请选择</option><option value="raise">要求增资</option><option value="reduce">压降风险资产</option><option value="restrict">限制业务扩张</option><option value="resolve">介入处置/清算</option><option value="maintain">维持现状</option></select></div>
+        <div class="form-group"><div class="form-label">花旗集团 → 监管措施</div><select class="form-select" id="c3_action"><option value="">请选择</option><option value="raise">要求增资</option><option value="reduce">压降风险资产</option><option value="restrict">限制业务扩张</option><option value="resolve">介入处置/清算</option><option value="maintain">维持现状</option></select></div>
+        <div class="form-group"><div class="form-label">贝尔斯登 → 监管措施</div><select class="form-select" id="c4_action"><option value="">请选择</option><option value="raise">要求增资</option><option value="reduce">压降风险资产</option><option value="restrict">限制业务扩张</option><option value="resolve">介入处置/清算</option><option value="maintain">维持现状</option></select></div>
+        <div class="form-group"><div class="form-label">安全储备银行 → 监管措施</div><select class="form-select" id="c5_action"><option value="">请选择</option><option value="raise">要求增资</option><option value="reduce">压降风险资产</option><option value="restrict">限制业务扩张</option><option value="resolve">介入处置/清算</option><option value="maintain">维持现状</option></select></div>
+      </div>
+    </div>
+    <button class="btn btn-danger btn-lg" onclick="runCrisisLab()" style="width:100%">🔴 运行压力测试 → 查看结果</button>
+    <div id="crisis_result" style="display:none;margin-top:20px"></div>
+  </div>
+
+  <!-- ── LAB 2: 监管沙盒 ───────────────────────────── -->
+  <div id="panel-lab2" class="lab-panel">
+    <div class="lab-panel-header">
+      <div class="lab-panel-title">🤖 实验二：监管沙盒评审官</div>
+      <button class="close-lab" onclick="closeAllLabs()">✕ 关闭</button>
+    </div>
+    <div class="alert alert-info">📋 实验目的：扮演FCA监管沙盒评审官，根据五项标准（真实创新性·消费者利益·消费者保护·监管合规·测试就绪度）评审4项金融科技申请。</div>
+    <div class="info-panel" style="margin-bottom:20px"><strong>FCA五大评审标准：</strong> ① 真实创新性（市场首创/显著改进）② 消费者利益（改善金融可及性）③ 消费者保护（退出机制完善）④ 监管合规基础（基本合规能力）⑤ 测试就绪度（方案具体可执行）</div>
+    <div id="sandbox_apps"></div>
+    <button class="btn btn-primary btn-lg" onclick="runSandboxLab()" style="width:100%;margin-top:16px">🏛️ 提交评审决定</button>
+    <div id="sandbox_result" style="display:none;margin-top:20px"></div>
+  </div>
+
+  <!-- ── LAB 3: 证券监管 ───────────────────────────── -->
+  <div id="panel-lab3" class="lab-panel">
+    <div class="lab-panel-header">
+      <div class="lab-panel-title">📈 实验三：证券监管综合实验</div>
+      <button class="close-lab" onclick="closeAllLabs()">✕ 关闭</button>
+    </div>
+    <div class="alert alert-info">📋 实验目的：① 识别内幕交易嫌疑人（2个案例）② 判断5项信息披露行为是否违规</div>
+    <div id="securities_content"></div>
+    <button class="btn btn-primary btn-lg" onclick="runSecuritiesLab()" style="width:100%;margin-top:16px">⚖️ 提交裁判意见</button>
+    <div id="securities_result" style="display:none;margin-top:20px"></div>
+  </div>
+
+  <!-- ── LAB 4: 保险偿付能力 ──────────────────────── -->
+  <div id="panel-lab4" class="lab-panel">
+    <div class="lab-panel-header">
+      <div class="lab-panel-title">🏢 实验四：保险偿付能力计算（C-ROSS偿二代）</div>
+      <button class="close-lab" onclick="closeAllLabs()">✕ 关闭</button>
+    </div>
+    <div class="alert alert-info">📋 实验目的：运用C-ROSS三支柱框架，计算保险公司最低资本需求与偿付能力充足率，给出监管诊断意见。</div>
+    <div class="info-panel" style="margin-bottom:16px"><strong>C-ROSS最低资本公式：</strong> 最低资本 = √(保险风险² + 市场风险² + 信用风险²) + 操作风险 + 利率风险附加</div>
+    <div style="margin-bottom:16px">
+      <div class="form-label">选择保险公司</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="card" id="ins_card_0" onclick="selectInsurance(0)" style="cursor:pointer;border:2px solid var(--blue)">
+          <div style="font-weight:700;color:var(--sky)">华泰人寿（模拟）</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">人身险 | 实际资本85亿 | 万能险占比偏高</div>
+        </div>
+        <div class="card" id="ins_card_1" onclick="selectInsurance(1)" style="cursor:pointer;border:2px solid var(--border)">
+          <div style="font-weight:700;color:var(--sky)">安盛财险（模拟）</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">财产险 | 实际资本45亿 | 车险为主</div>
+        </div>
+      </div>
+    </div>
+    <div id="insurance_data_panel"></div>
+    <div class="divider"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="form-group"><div class="form-label">你计算的综合偿付能力充足率（%）</div><input class="form-input" id="ins_comp" type="number" step="0.1" placeholder="例：145.2"></div>
+      <div class="form-group"><div class="form-label">你计算的核心偿付能力充足率（%）</div><input class="form-input" id="ins_core" type="number" step="0.1" placeholder="例：123.5"></div>
+    </div>
+    <div class="form-group"><div class="form-label">监管诊断意见（风险识别 + 处置建议）</div><textarea class="form-textarea" id="ins_diagnosis" placeholder="例：该公司综合偿付能力充足率达标，但万能险占比较高，市场风险敞口较大，建议……"></textarea></div>
+    <button class="btn btn-primary btn-lg" onclick="runInsuranceLab()" style="width:100%">📊 提交计算结果</button>
+    <div id="insurance_result" style="display:none;margin-top:20px"></div>
+  </div>
+
+  <!-- ── LAB 5: 量化监管 ───────────────────────────── -->
+  <div id="panel-lab5" class="lab-panel">
+    <div class="lab-panel-header">
+      <div class="lab-panel-title">📉 实验五：量化监管（VaR / CoVaR / CCyB）</div>
+      <button class="close-lab" onclick="closeAllLabs()">✕ 关闭</button>
+    </div>
+    <div class="alert alert-info">📋 实验目的：运用系统性风险测量工具分析银行风险，给出逆周期资本缓冲政策建议。</div>
+    <div class="grid2" style="margin-bottom:20px">
+      <div>
+        <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--gold)">银行风险数据</div>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>银行</th><th>VaR(99%)</th><th>ΔCoVaR贡献</th><th>杠杆率</th></tr></thead><tbody>
+          <tr><td>工商银行(模拟)</td><td>2.8%</td><td class="warn">3.2%</td><td>12.5x</td></tr>
+          <tr><td>招商银行(模拟)</td><td class="warn">4.1%</td><td class="warn">4.8%</td><td>14.2x</td></tr>
+          <tr><td>平安银行(模拟)</td><td class="warn">5.3%</td><td class="danger">5.7%</td><td>15.8x</td></tr>
+          <tr><td>宁波银行(模拟)</td><td class="danger">6.2%</td><td class="warn">5.1%</td><td>13.1x</td></tr>
+          <tr><td>农商行(模拟)</td><td class="danger">7.8%</td><td class="ok">2.1%</td><td>11.3x</td></tr>
+        </tbody></table></div>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--gold)">宏观指标</div>
+        <div class="card" style="font-size:12px;line-height:2">
+          <div>信贷/GDP缺口：<strong style="color:var(--orange)">8.5%</strong></div>
+          <div>房价同比增速：<strong style="color:var(--text)">6.2%</strong></div>
+          <div>同业利率价差：<strong style="color:var(--text)">0.85%</strong></div>
+          <div>VIX等价指数：<strong style="color:var(--orange)">28.5</strong></div>
+          <div>全社会杠杆率：<strong style="color:var(--orange)">312%</strong></div>
+        </div>
+        <div class="card" style="margin-top:10px;font-size:12px">
+          <div style="font-weight:700;margin-bottom:6px;color:var(--gold)">CCyB规则</div>
+          <div>缺口 0-2%：CCyB = <strong>0%</strong></div>
+          <div>缺口 2-5%：CCyB = <strong>0.5%</strong></div>
+          <div>缺口 5-10%：CCyB = <strong>1.5%</strong></div>
+          <div>缺口 &gt;10%：CCyB = <strong>2.5%</strong></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="form-group"><div class="form-label">Q1：哪家银行系统性风险贡献最大？（ΔCoVaR最高）</div>
+        <select class="form-select" id="q_q1"><option value="">请选择</option><option>工商银行(模拟)</option><option>招商银行(模拟)</option><option>平安银行(模拟)</option><option>宁波银行(模拟)</option><option>农商行(模拟)</option></select></div>
+      <div class="form-group"><div class="form-label">Q2：哪家银行个体风险最高？（VaR99%最高）</div>
+        <select class="form-select" id="q_q2"><option value="">请选择</option><option>工商银行(模拟)</option><option>招商银行(模拟)</option><option>平安银行(模拟)</option><option>宁波银行(模拟)</option><option>农商行(模拟)</option></select></div>
+      <div class="form-group"><div class="form-label">Q3：当前信贷/GDP缺口8.5%，应设置CCyB为？</div>
+        <select class="form-select" id="q_q3"><option value="">请选择</option><option value="0">0%</option><option value="0.5">0.5%</option><option value="1.5">1.5%</option><option value="2.5">2.5%</option></select></div>
+      <div class="form-group"><div class="form-label">Q4：12周历史数据中最大单周亏损（%，填负数如−12.5）</div>
+        <input class="form-input" id="q_q4" type="number" step="0.1" placeholder="−12.5"></div>
+    </div>
+    <button class="btn btn-primary btn-lg" onclick="runQuantLab()" style="width:100%">📐 提交量化分析</button>
+    <div id="quant_result" style="display:none;margin-top:20px"></div>
+  </div>
+
+  <!-- ── LAB 6: 银行风险控制 ───────────────────────── -->
+  <div id="panel-lab6" class="lab-panel">
+    <div class="lab-panel-header">
+      <div class="lab-panel-title">🏦 实验六：银行风险控制综合实验</div>
+      <button class="close-lab" onclick="closeAllLabs()">✕ 关闭</button>
+    </div>
+    <div class="alert alert-info">📋 场景：兴华商业银行（模拟）发生系列风险事件，你作为风控官需逐一处置，并判断各项监管指标达标情况。</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px">
+      <div class="card" style="text-align:center"><div style="font-size:10px;color:var(--muted)">Tier1充足率</div><div style="font-size:20px;font-weight:800;color:var(--green2)">9.33%</div><div style="font-size:10px;color:var(--muted)">≥6% ✓</div></div>
+      <div class="card" style="text-align:center"><div style="font-size:10px;color:var(--muted)">不良贷款率</div><div style="font-size:20px;font-weight:800;color:var(--orange)">2.49%</div><div style="font-size:10px;color:var(--muted)">监管红线5%</div></div>
+      <div class="card" style="text-align:center"><div style="font-size:10px;color:var(--muted)">LCR</div><div style="font-size:20px;font-weight:800;color:var(--green2)">114.3%</div><div style="font-size:10px;color:var(--muted)">≥100% ✓</div></div>
+      <div class="card" style="text-align:center"><div style="font-size:10px;color:var(--muted)">NSFR</div><div style="font-size:20px;font-weight:800;color:var(--green2)">112.5%</div><div style="font-size:10px;color:var(--muted)">≥100% ✓</div></div>
+      <div class="card" style="text-align:center"><div style="font-size:10px;color:var(--muted)">总资产(亿)</div><div style="font-size:20px;font-weight:800;color:var(--sky)">2,800</div><div style="font-size:10px;color:var(--muted)">贷款1,680亿</div></div>
+    </div>
+    <div id="bankrisk_events"></div>
+    <div style="margin-top:16px;padding:16px;background:var(--card);border-radius:var(--radius2)">
+      <div style="font-weight:700;font-size:13px;margin-bottom:12px;color:var(--gold)">指标判断题</div>
+      <div style="display:grid;gap:10px">
+        <div><div class="form-label">该行LCR=114.3%，你的判断：</div><div class="radio-group"><label class="radio-item"><input type="radio" name="q_lcr" value="pass"> 达标，无需干预</label><label class="radio-item"><input type="radio" name="q_lcr" value="warning"> 警告，需关注</label><label class="radio-item"><input type="radio" name="q_lcr" value="fail"> 不达标，需整改</label></div></div>
+        <div><div class="form-label">该行不良贷款率=2.49%，你的判断：</div><div class="radio-group"><label class="radio-item"><input type="radio" name="q_npl" value="pass"> 正常，无需干预</label><label class="radio-item"><input type="radio" name="q_npl" value="warning"> 需关注，加强监测</label><label class="radio-item"><input type="radio" name="q_npl" value="fail"> 超标，立即整改</label></div></div>
+        <div><div class="form-label">该行Tier1充足率=9.33%，你的判断：</div><div class="radio-group"><label class="radio-item"><input type="radio" name="q_tier1" value="pass"> 达标，满足要求</label><label class="radio-item"><input type="radio" name="q_tier1" value="warning"> 勉强达标，需补充</label><label class="radio-item"><input type="radio" name="q_tier1" value="fail"> 不达标，强制增资</label></div></div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-lg" onclick="runBankRiskLab()" style="width:100%;margin-top:16px">🏦 提交风险处置方案</button>
+    <div id="bankrisk_result" style="display:none;margin-top:20px"></div>
+  </div>
+
+  <!-- ── LAB 7: 影子银行合规 (NEW) ─────────────────── -->
+  <div id="panel-lab7" class="lab-panel">
+    <div class="lab-panel-header">
+      <div class="lab-panel-title">🌑 实验七：影子银行与资管新规合规判断</div>
+      <button class="close-lab" onclick="closeAllLabs()">✕ 关闭</button>
+    </div>
+    <div class="alert alert-success">📋 实验目的：根据2018年《关于规范金融机构资产管理业务的指导意见》（资管新规），判断5款金融产品是否合规，指出违规点。对应第13-14讲。</div>
+    <div class="info-panel" style="margin-bottom:20px">
+      <strong>资管新规核心要求：</strong><br>
+      ① <strong>净值化管理</strong>——禁止保本保收益（禁止刚性兑付）<br>
+      ② <strong>禁止资金池</strong>——底层资产须与产品对应，可穿透识别<br>
+      ③<strong>限制期限错配</strong>——开放式产品不得大比例投长期非标<br>
+      ④ <strong>托管要求</strong>——资金须由第三方银行托管，禁止自我托管<br>
+      ⑤ <strong>统一监管标准</strong>——打破分业监管套利
+    </div>
+    <div id="shadow_products"></div>
+    <button class="btn btn-primary btn-lg" onclick="runShadowLab()" style="width:100%;margin-top:16px">📋 提交合规判断</button>
+    <div id="shadow_result" style="display:none;margin-top:20px"></div>
+  </div>
+
+  <!-- ── LAB 8: 货币政策协调 (NEW) ─────────────────── -->
+  <div id="panel-lab8" class="lab-panel">
+    <div class="lab-panel-header">
+      <div class="lab-panel-title">🏛️ 实验八：货币政策与宏观审慎协调</div>
+      <button class="close-lab" onclick="closeAllLabs()">✕ 关闭</button>
+    </div>
+    <div class="alert alert-success">📋 实验目的：运用泰勒规则计算最优基准利率，并结合信贷、房价等指标配套宏观审慎工具，理解"双支柱"框架。对应第6-7讲。</div>
+    <div class="info-panel" style="margin-bottom:20px">
+      <strong>泰勒规则：</strong> r = r* + π + 0.5×(π − π*) + 0.5×(y − y*)<br>
+      其中：r* = 均衡实际利率（取2%），π* = 通胀目标（取2%），y* = 潜在GDP增速（取5%）
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <div style="font-weight:700;font-size:13px;margin-bottom:12px;color:var(--gold)">当前经济指标</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center">
+        <div><div style="font-size:24px;font-weight:800;color:var(--sky)">5.2%</div><div style="font-size:11px;color:var(--muted)">GDP增速 (y)<br>目标5.0%</div></div>
+        <div><div style="font-size:24px;font-weight:800;color:var(--orange)">2.8%</div><div style="font-size:11px;color:var(--muted)">CPI通胀 (π)<br>目标2.0%</div></div>
+        <div><div style="font-size:24px;font-weight:800;color:var(--orange)">8.5%</div><div style="font-size:11px;color:var(--muted)">信贷/GDP缺口<br>触发CCyB</div></div>
+        <div><div style="font-size:24px;font-weight:800;color:var(--orange)">+6.2%</div><div style="font-size:11px;color:var(--muted)">房价同比<br>偏快上涨</div></div>
+        <div><div style="font-size:24px;font-weight:800;color:var(--red2)">312%</div><div style="font-size:11px;color:var(--muted)">社会杠杆率<br>较高</div></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="form-group"><div class="form-label">Q1：按泰勒规则计算基准利率应设为（%）</div><input class="form-input" id="taylor_rate" type="number" step="0.1" placeholder="例：5.3"></div>
+      <div class="form-group"><div class="form-label">Q2：当前信贷/GDP缺口=8.5%，建议CCyB设为</div>
+        <select class="form-select" id="taylor_ccyb"><option value="">请选择</option><option value="0">0%（无需激活）</option><option value="0.5">0.5%（预警）</option><option value="1.5">1.5%（偏热）</option><option value="2.5">2.5%（过热，上限）</option></select></div>
+      <div class="form-group"><div class="form-label">Q3：房价同比+6.2%，宏观审慎工具应选？</div>
+        <select class="form-select" id="taylor_tool"><option value="">请选择</option><option value="raise_ltv">提高LTV上限（放松）</option><option value="lower_ltv">降低LTV上限至70%（收紧）</option><option value="raise_rate">直接加息200bp</option><option value="do_nothing">不需要工具，观察即可</option></select></div>
+      <div class="form-group"><div class="form-label">Q4："双支柱"框架中货币政策主要针对？</div>
+        <select class="form-select" id="taylor_dual"><option value="">请选择</option><option value="price">价格稳定（通胀目标）</option><option value="system">金融系统稳定</option><option value="both_same">两者完全相同，无区别</option><option value="neither">既非价格也非金融稳定</option></select></div>
+    </div>
+    <button class="btn btn-primary btn-lg" onclick="runPolicyLab()" style="width:100%">🏛️ 提交政策分析</button>
+    <div id="policy_result" style="display:none;margin-top:20px"></div>
+  </div>
+
+  <!-- ── LAB 9: SIFI处置 (NEW - Lecture 16) ─────────── -->
+  <div id="panel-lab9" class="lab-panel">
+    <div class="lab-panel-header">
+      <div class="lab-panel-title">🔴 实验九：系统重要性机构处置演练【第16讲】</div>
+      <button class="close-lab" onclick="closeAllLabs()">✕ 关闭</button>
+    </div>
+    <div class="alert alert-danger">⚠️ 紧急情景：华夏重要银行（模拟，D-SIB第4档）因房地产敞口巨大出现资本严重不足，系统性危机一触即发！你是金融稳定委员会主席，必须在48小时内做出处置决定。</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+      <div class="card" style="text-align:center;border-top:3px solid var(--red)"><div style="font-size:11px;color:var(--muted)">总资产</div><div style="font-size:22px;font-weight:800;color:var(--text)">5.8万亿</div></div>
+      <div class="card" style="text-align:center;border-top:3px solid var(--red)"><div style="font-size:11px;color:var(--muted)">风险加权资产(RWA)</div><div style="font-size:22px;font-weight:800;color:var(--text)">35,000亿</div></div>
+      <div class="card" style="text-align:center;border-top:3px solid var(--red)"><div style="font-size:11px;color:var(--muted)">当前总资本充足率</div><div style="font-size:22px;font-weight:800;color:var(--red2)">5.0%</div><div style="font-size:10px;color:var(--red2)">远低于8%要求！</div></div>
+      <div class="card" style="text-align:center;border-top:3px solid var(--orange)"><div style="font-size:11px;color:var(--muted)">可计入TLAC的高级债</div><div style="font-size:22px;font-weight:800;color:var(--orange)">2,100亿</div></div>
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <div style="font-weight:700;font-size:13px;margin-bottom:12px;color:var(--gold)">资本结构明细</div>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>资本层级</th><th>金额（亿）</th><th>占RWA比例</th><th>TLAC资格</th></tr></thead>
+        <tbody>
+          <tr><td>CET1（普通股一级）</td><td>1,225</td><td class="danger">3.5%</td><td class="ok">✓ 可计入</td></tr>
+          <tr><td>AT1（其他一级）</td><td>350</td><td class="warn">1.0%</td><td class="ok">✓ 可计入</td></tr>
+          <tr><td>T2（二级资本）</td><td>175</td><td class="warn">0.5%</td><td class="ok">✓ 可计入</td></tr>
+          <tr><td>合格高级无担保债</td><td>2,100</td><td>6.0%</td><td class="ok">✓ 可计入</td></tr>
+          <tr style="background:rgba(255,215,0,0.05)"><td><strong>当前TLAC合计</strong></td><td><strong>3,850</strong></td><td class="warn"><strong>11.0%</strong></td><td class="warn">⚠ 低于16%</td></tr>
+        </tbody>
+      </table></div>
+      <div class="formula-box" style="margin-top:12px">TLAC要求（2025年后D-SIB）：≥ 16% × RWA = 16% × 35,000亿 = <span style="color:var(--gold)">5,600亿</span><br>当前TLAC = 1,225 + 350 + 175 + 2,100 = <span style="color:var(--orange)">3,850亿</span><br>TLAC缺口 = 5,600 − 3,850 = <span style="color:var(--red2)">???亿</span></div>
+    </div>
+    <div style="display:grid;gap:12px;margin-bottom:20px">
+      <div class="form-group"><div class="form-label">Q1：计算TLAC缺口（亿元）</div><input class="form-input" id="sifi_gap" type="number" placeholder="填写数字，如1750"></div>
+      <div class="form-group"><div class="form-label">Q2：选择最合适的处置工具</div>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="sifi_tool" value="bailout"> 🏛️ 政府直接注资救助（Bailout）</label>
+          <label class="radio-item"><input type="radio" name="sifi_tool" value="bailin"> 💸 债务减记转股（Bail-in）✓推荐</label>
+          <label class="radio-item"><input type="radio" name="sifi_tool" value="bridge"> 🌉 桥接银行（Bridge Bank）</label>
+          <label class="radio-item"><input type="radio" name="sifi_tool" value="liquidation"> 🔴 直接破产清算</label>
+        </div>
+      </div>
+      <div class="form-group"><div class="form-label">Q3：Bail-in减记顺序应为（选择正确顺序）</div>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="sifi_order" value="a"> CET1 → AT1 → T2 → 高级无担保债</label>
+          <label class="radio-item"><input type="radio" name="sifi_order" value="b"> 高级无担保债 → T2 → AT1 → CET1（从外到内）✓</label>
+          <label class="radio-item"><input type="radio" name="sifi_order" value="c"> 所有资本同比例减记</label>
+          <label class="radio-item"><input type="radio" name="sifi_order" value="d"> 先减记存款，再减记股权</label>
+        </div>
+      </div>
+      <div class="form-group"><div class="form-label">Q4：处置过程中"生前遗嘱"（RRP）的核心作用是？</div>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="sifi_rrp" value="a"> 提前规划处置方案，降低不确定性和社会成本</label>
+          <label class="radio-item"><input type="radio" name="sifi_rrp" value="b"> 承诺政府一定会救助，稳定市场信心</label>
+          <label class="radio-item"><input type="radio" name="sifi_rrp" value="c"> 允许银行无限制扩张资产负债表</label>
+          <label class="radio-item"><input type="radio" name="sifi_rrp" value="d"> 完全消除银行破产的可能性</label>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-danger btn-lg" onclick="runSIFILab()" style="width:100%">🔴 提交处置决定 — 阻止系统性崩溃！</button>
+    <div id="sifi_result" style="display:none;margin-top:20px"></div>
+  </div>
+
+</div>
+</section>
+
+<!-- ═══ QUIZ SECTION ════════════════════════════════════════════ -->
+<section id="quiz" class="section">
+<div class="section-inner">
+  <div class="sec-header"><h2>📝 随堂测验系统</h2><div class="sec-line"></div><div class="sec-badge">80+ 题库</div></div>
+  <div id="quiz-selector" style="margin-bottom:24px">
+    <div style="font-size:13px;color:var(--muted);margin-bottom:14px">选择章节开始测验：</div>
+    <div class="grid4" id="quizChapterBtns"></div>
+  </div>
+  <div id="quiz-area" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div id="quiz-ch-title" style="font-size:16px;font-weight:700;color:var(--gold)"></div>
+      <button class="btn btn-outline btn-sm" onclick="exitQuiz()">← 返回选章</button>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px">
+        <span>进度</span><span id="quiz-progress-txt">0 / 0</span>
+      </div>
+      <div class="progress"><div class="progress-bar pb-blue" id="quiz-progress-bar" style="width:0%"></div></div>
+    </div>
+    <div id="quiz-questions"></div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-primary btn-lg" onclick="submitQuiz()" style="flex:1">✅ 提交答案，查看得分</button>
+    </div>
+    <div id="quiz-result" style="display:none;margin-top:20px"></div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ ANSWERS SECTION ══════════════════════════════════════════ -->
+<section id="answers" class="section">
+<div class="section-inner">
+  <div class="sec-header"><h2>🔑 实验答案详解</h2><div class="sec-line"></div></div>
+  <div id="answers-list"></div>
+</div>
+</section>
+
+</body></html>
